@@ -1,6 +1,6 @@
 FROM arm32v7/python:3.7-slim-buster
 
-COPY qemu-arm-static /usr/bin
+COPY ../../qemu-arm-static /usr/bin
 
 ENV PYTHONUNBUFFERED=1
 
