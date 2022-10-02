@@ -1,4 +1,4 @@
-quantutils @ git+https://github.com/cwilko/quantutils.git#egg=quantutils
-MIPriceAggregator @ git+https://github.com/cwilko/marketinsights-price-aggregator.git#egg=MIPriceAggregator
+#quantutils @ git+https://github.com/cwilko/quantutils.git#egg=quantutils
+#MIPriceAggregator @ git+https://github.com/cwilko/marketinsights-price-aggregator.git#egg=MIPriceAggregator
 numpy==1.14.3
 pandas==0.23.4
