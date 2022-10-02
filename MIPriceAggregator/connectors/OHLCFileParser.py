@@ -13,7 +13,7 @@ class OHLCFileParser:
         DS_path = options["root"] + "/" + dsName + "/"
         self.SRC_path = DS_path + "raw/"
 
-    def getData(self, source):
+    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=0):
 
         options = self.options
 
@@ -36,9 +36,12 @@ class OHLCFileParser:
                                           )
 
                 if newData is not None:
+                    newData = ppl.cropDate(newData, start, end)
 
-                    newData = ppl.localize(newData, self.tz, "UTC")
+                    if not newData.empty:
 
-                    existingData = ppl.merge(newData, existingData)
+                        newData = ppl.localize(newData, self.tz, "UTC")
+
+                        existingData = ppl.merge(newData, existingData)
 
         return existingData
