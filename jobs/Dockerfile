@@ -10,10 +10,9 @@ WORKDIR /usr/app
 
 
 RUN apt-get -y update && \
-    apt-get -y install --no-install-recommends libatlas3-base libhdf5-103 git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install -r requirements.txt
+RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
 
 CMD ["python", "-u", "app.py"]
