@@ -1,11 +1,11 @@
 FROM arm32v7/python:3.7-slim-buster
 
-COPY ../../qemu-arm-static /usr/bin
+COPY qemu-arm-static /usr/bin
 
 ENV PYTHONUNBUFFERED=1
 
 RUN mkdir -p /usr/app
-COPY . /usr/app
+COPY nightly /usr/app
 WORKDIR /usr/app
 
 
