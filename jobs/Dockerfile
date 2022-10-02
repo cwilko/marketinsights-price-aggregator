@@ -10,7 +10,7 @@ WORKDIR /usr/app
 
 
 RUN apt-get -y update && \
-    apt-get -y install --no-install-recommends git && \
+    apt-get -y install --no-install-recommends libatlas3-base git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
