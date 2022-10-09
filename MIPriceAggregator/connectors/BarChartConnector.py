@@ -100,6 +100,7 @@ class BarChartConnector:
         if data is not None:
             df = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
                 .replace('NA', np.nan) \
+                .replace(np.nan, 0) \
                 .apply(pd.to_numeric, errors='ignore') \
                 .assign(tradeTime=lambda x: pd.to_datetime(x['tradeTime']))
             df.columns = ["Date_Time", "Open", "High", "Low", "Close", "Volume", "OpenInterest"]
@@ -122,6 +123,7 @@ class BarChartConnector:
         if data is not None:
             data = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
                 .replace('NA', np.nan) \
+                .replace(np.nan, 0) \
                 .apply(pd.to_numeric, errors='ignore') \
                 .assign(optionType=lambda x: [t.lower()[0] for t in x["optionType"]]) \
                 .assign(Date_Time=date.today())
