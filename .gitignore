@@ -8,6 +8,6 @@ test/data
 **/test-reports
 **/*egg-info
 *.hdf
-datasources/
+datasources/*
 datastore/
 build/
