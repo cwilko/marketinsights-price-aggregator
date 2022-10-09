@@ -5,8 +5,8 @@ COPY qemu-arm-static /usr/bin
 ENV PYTHONUNBUFFERED=1
 
 RUN mkdir -p /usr/app
-COPY nightly /usr/app
-WORKDIR /usr/app
+COPY . /usr/app
+WORKDIR /usr/app/nightly
 
 
 RUN apt-get -y update && \

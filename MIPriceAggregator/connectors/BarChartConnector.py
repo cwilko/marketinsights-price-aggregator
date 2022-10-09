@@ -69,9 +69,12 @@ class BarChartConnector:
             'raw': '1'
         }
 
-    def get_api_data(self, url, params=None):
+    def get_api_data(self, url, params=None, debug=False):
 
         time.sleep(randint(2, 5))
+        if debug:
+            print("Requesting from: " + url)
+
         try:
             response = self.session.get(
                 url=url,
@@ -100,6 +103,7 @@ class BarChartConnector:
                 .apply(pd.to_numeric, errors='ignore') \
                 .assign(tradeTime=lambda x: pd.to_datetime(x['tradeTime']))
             df.columns = ["Date_Time", "Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+            df = df.astype(dtype={"Open": "float64", "High": "float64", "Low": "float64", "Close": "float64", "Volume": "int64", "OpenInterest": "int64"})
             df = df.set_index("Date_Time")
 
         if (df.index.tz is None):
@@ -121,8 +125,8 @@ class BarChartConnector:
                 .apply(pd.to_numeric, errors='ignore') \
                 .assign(optionType=lambda x: [t.lower()[0] for t in x["optionType"]]) \
                 .assign(Date_Time=date.today())
-            data.columns = ["epic", "instrumentName", "type", "strike", "Open", "High", "Low", "Close", "Volume", "OpenInterest", "Date_Time"]
-
+            data.columns = ["ID", "instrumentName", "type", "strike", "Open", "High", "Low", "Close", "Volume", "OpenInterest", "Date_Time"]
+            data = data.astype(dtype={"Open": "float64", "High": "float64", "Low": "float64", "Close": "float64", "Volume": "int64", "OpenInterest": "int64"})
         data["underlying"] = chain["underlying"]
         underlyingPrice = np.nan
         if appendUnderlying:
@@ -134,7 +138,9 @@ class BarChartConnector:
         data["bid"] = data["Close"]
         data["expiry"] = datetime.strptime(chain["expiry"], '%Y-%m-%d')
 
-        data = data.reset_index().set_index(["Date_Time", "epic"])
+        data = data.reset_index().set_index(["Date_Time", "ID"])
+        if (data.index.get_level_values("Date_Time").tz is None):
+            data = ppl.localize(data, self.tz, self.tz)
         data = data.sort_values("strike")
 
         return data
