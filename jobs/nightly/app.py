@@ -32,7 +32,7 @@ def appendOptionChainPrices(mds, ds_file):
 
                 # Get todays prices from optionChain
                 print("Requesting " + optionChain["name"])
-                optionData = dataConnector.getOptions(optionChain, appendUnderlying=False)
+                optionData = dataConnector.getOptions(optionChain, appendUnderlying=False, debug=True)
 
                 if optionData is not None:
 
