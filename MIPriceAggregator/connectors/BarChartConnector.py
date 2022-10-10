@@ -146,8 +146,7 @@ class BarChartConnector:
 
         data = data.reset_index().set_index(["Date_Time", "ID"])
 
-        print(data)
-        if (data.index.get_level_values("Date_Time").tz is None):
+        if not hasattr(data.index.get_level_values("Date_Time"), "tz") or data.index.get_level_values("Date_Time").tz is None:
             data = ppl.localize(data, self.tz, self.tz)
         data = data.sort_values("strike")
 
