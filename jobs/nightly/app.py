@@ -41,7 +41,7 @@ def appendOptionChainPrices(mds, ds_file):
 
             if mds is not None and market["name"] in mdsKeys:
                 print("Adding " + optionChain["name"] + " to " + market["name"] + " table")
-                mds.append(market["name"], options, "D", update=True, debug=True)
+                mds.append(market["name"], options, update=True, debug=True)
 
     return options
 

@@ -23,18 +23,18 @@ class MDSConnector:
 
         underlying = self.mds.aggregate([chain["underlying"]], self.opts["interval"], start, end)
 
-        data = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'epic']))
+        data = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
 
         options = chain["options"]
         for option in options:
-            print("Adding {} to Option {}".format(option["epic"], chain["name"]))
-            optionData = self.mds.get(option["epic"])
-            optionData["epic"] = option["epic"]
+            print("Adding {} to Option {}".format(option["ID"], chain["name"]))
+            optionData = self.mds.get(option["ID"])
+            optionData["ID"] = option["ID"]
             optionData["instrumentName"] = option["instrumentName"]
             optionData["strike"] = option["strike"]
             optionData["type"] = option["type"]
             optionData["underlying"] = underlying.loc[optionData.index]["Close"]
-            optionData = optionData.reset_index().set_index(["Date_Time", "epic"])
+            optionData = optionData.reset_index().set_index(["Date_Time", "ID"])
             data = ppl.merge(data, optionData)
 
         data["underlyingSymbol"] = chain["underlying"]
