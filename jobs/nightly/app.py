@@ -19,7 +19,7 @@ def appendOptionChainPrices(mds, ds_file):
 
     datasources = json.load(open(ds_file))
     mdsKeys = mds.getKeys()
-
+    print(mdsKeys)
     for datasource in datasources:
 
         dataConnector = getConnector(datasource["class"], datasource["name"], datasource["timezone"], datasource["opts"])
@@ -40,6 +40,8 @@ def appendOptionChainPrices(mds, ds_file):
 
                     options = ppl.merge(options, optionData)
 
+            print(market["name"])
+            print(mds)
             if mds is not None and market["name"] in mdsKeys:
                 print("Adding " + optionChain["name"] + " to " + market["name"] + " table")
                 mds.append(market["name"], options, "D", update=True, debug=True)
