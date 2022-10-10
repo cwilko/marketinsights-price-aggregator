@@ -99,19 +99,22 @@ class BarChartConnector:
 
         data = resp["data"]
         if data is not None:
-            df = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
+            data = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
                 .replace('NA', np.nan) \
                 .replace(np.nan, 0) \
                 .apply(pd.to_numeric, errors='ignore') \
-                .assign(tradeTime=lambda x: pd.to_datetime(x['tradeTime']))
-            df.columns = ["Date_Time", "Open", "High", "Low", "Close", "Volume", "OpenInterest"]
-            df = df.astype(dtype={"Open": "float64", "High": "float64", "Low": "float64", "Close": "float64", "Volume": "int64", "OpenInterest": "int64"})
-            df = df.set_index("Date_Time")
+                .assign(ID=source["name"]) \
+                .rename(columns={"tradeTime": "Date_Time"}) \
+                .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time'])) \
+                .set_index(["Date_Time", "ID"])
 
-        if (df.index.tz is None):
-            data = ppl.localize(df, self.tz, self.tz)
+            data.columns = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+            data = data.astype(dtype={"Open": "float64", "High": "float64", "Low": "float64", "Close": "float64", "Volume": "int64", "OpenInterest": "int64"})
 
-        return df
+        if (data.index.get_level_values("Date_Time").tz is None):
+            data = ppl.localize(data, self.tz, self.tz)
+
+        return data
 
     def getOptions(self, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01", debug=False):
 
