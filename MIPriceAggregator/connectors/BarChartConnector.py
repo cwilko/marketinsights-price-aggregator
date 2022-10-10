@@ -145,6 +145,8 @@ class BarChartConnector:
         data["expiry"] = datetime.strptime(chain["expiry"], '%Y-%m-%d')
 
         data = data.reset_index().set_index(["Date_Time", "ID"])
+
+        print(data)
         if (data.index.get_level_values("Date_Time").tz is None):
             data = ppl.localize(data, self.tz, self.tz)
         data = data.sort_values("strike")
