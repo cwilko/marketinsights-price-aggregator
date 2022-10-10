@@ -81,7 +81,8 @@ class BarChartConnector:
                 params=params,
                 headers=self.construct_headers(self.session)
             )
-            # print(response.json())
+            if debug:
+                print(response.json())
             return response.json()
         except e:
             print("Error: " + e)
@@ -89,9 +90,9 @@ class BarChartConnector:
             print(params)
         return None
 
-    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=200):
+    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=200, debug=False):
 
-        resp = self.get_api_data(self.historicalUrl, self.construct_quotes_payload(source["name"], count=records))
+        resp = self.get_api_data(self.historicalUrl, self.construct_quotes_payload(source["name"], count=records), debug)
 
         if resp["count"] == 0:
             return None
@@ -112,9 +113,9 @@ class BarChartConnector:
 
         return df
 
-    def getOptions(self, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01"):
+    def getOptions(self, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01", debug=False):
 
-        resp = self.get_api_data(self.apiUrl, self.construct_options_payload(chain["name"]))
+        resp = self.get_api_data(self.apiUrl, self.construct_options_payload(chain["name"]), debug)
 
         if resp["count"] == 0:
             return None
