@@ -130,7 +130,8 @@ class BarChartConnector:
                 .replace(np.nan, 0) \
                 .apply(pd.to_numeric, errors='ignore') \
                 .assign(optionType=lambda x: [t.lower()[0] for t in x["optionType"]]) \
-                .assign(Date_Time=date.today())
+                .assign(Date_Time=date.today()) \
+                .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time']))
             data.columns = ["ID", "instrumentName", "type", "strike", "Open", "High", "Low", "Close", "Volume", "OpenInterest", "Date_Time"]
             data = data.astype(dtype={"Open": "float64", "High": "float64", "Low": "float64", "Close": "float64", "Volume": "int64", "OpenInterest": "int64"})
         data["underlying"] = chain["underlying"]
@@ -146,7 +147,7 @@ class BarChartConnector:
 
         data = data.reset_index().set_index(["Date_Time", "ID"])
 
-        if not hasattr(data.index.get_level_values("Date_Time"), "tz") or data.index.get_level_values("Date_Time").tz is None:
+        if (data.index.get_level_values("Date_Time").tz is None):
             data = ppl.localize(data, self.tz, self.tz)
         data = data.sort_values("strike")
 
