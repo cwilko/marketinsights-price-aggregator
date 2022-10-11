@@ -19,7 +19,6 @@ def appendOptionChainPrices(mds, ds_file):
 
     datasources = json.load(open(ds_file))
     mdsKeys = mds.getKeys()
-    options = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
 
     for datasource in datasources:
 
@@ -27,6 +26,7 @@ def appendOptionChainPrices(mds, ds_file):
 
         for market in datasource["markets"]:
 
+            options = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
             if "optionChains" in market:
 
                 for optionChain in market["optionChains"]:
@@ -40,9 +40,9 @@ def appendOptionChainPrices(mds, ds_file):
                         optionData = optionData.sort_values(["expiry", "strike"])[["Open", "High", "Low", "Close", "Volume", "OpenInterest"]]
                         options = ppl.merge(options, optionData)
 
-                        if mds is not None and market["ID"] in mdsKeys:
-                            print("Adding " + optionChain["ID"] + " to " + market["ID"] + " table")
-                            mds.append(market["ID"], options, update=True, debug=True)
+                if mds is not None and market["ID"] in mdsKeys:
+                    print("Adding option data to " + market["ID"] + " table")
+                    mds.append(market["ID"], options, update=True, debug=True)
 
     return options
 
@@ -51,13 +51,13 @@ def fetchHistoricalData(mds, ds_file, start="1979-01-01", end="2050-01-01", reco
 
     datasources = json.load(open(ds_file))
 
-    data = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
-
     for datasource in datasources:
 
         dataConnector = getConnector(datasource["class"], datasource["ID"], datasource["timezone"], datasource["opts"])
 
         for market in datasource["markets"]:
+
+            data = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
 
             for source in market["sources"]:
 
@@ -84,10 +84,10 @@ def fetchHistoricalData(mds, ds_file, start="1979-01-01", end="2050-01-01", reco
                     if debug:
                         print(newData)
 
-                    if mds is not None:
-                        mds.append(market["ID"], newData, update=True)
-
                     data = ppl.merge(data, newData)
+
+            if mds is not None:
+                mds.append(market["ID"], data, update=True)
 
     return data
 # run
@@ -105,3 +105,4 @@ if __name__ == '__main__':
 
     fetchHistoricalData(mds, ds_location, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, debug=True)
     appendOptionChainPrices(mds, ds_location)
+    print("Updates complete at " + str(datetime.utcnow()))
