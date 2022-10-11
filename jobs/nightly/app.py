@@ -40,9 +40,9 @@ def appendOptionChainPrices(mds, ds_file):
                         optionData = optionData.sort_values(["expiry", "strike"])[["Open", "High", "Low", "Close", "Volume", "OpenInterest"]]
                         options = ppl.merge(options, optionData)
 
-                if mds is not None and market["ID"] in mdsKeys:
-                    print("Adding " + optionChain["ID"] + " to " + market["ID"] + " table")
-                    mds.append(market["ID"], options, update=True, debug=True)
+                        if mds is not None and market["ID"] in mdsKeys:
+                            print("Adding " + optionChain["ID"] + " to " + market["ID"] + " table")
+                            mds.append(market["ID"], options, update=True, debug=True)
 
     return options
 
@@ -103,5 +103,5 @@ if __name__ == '__main__':
     # Local Options
     mds = MarketDataStore(remote=True, location="http://pricestore.192.168.1.203.nip.io")
 
+    fetchHistoricalData(mds, ds_location, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, debug=True)
     appendOptionChainPrices(mds, ds_location)
-    fetchHistoricalData(mds, ds_location, start=date.today(), records=1, debug=True)
