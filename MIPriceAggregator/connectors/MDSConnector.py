@@ -17,7 +17,7 @@ class MDSConnector:
 
     def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=0):
 
-        return self.mds.aggregate([source["name"]], source["sample_unit"], start, end)
+        return self.mds.aggregate(market["ID"], [source["ID"]], start, end)
 
     def getOptions(self, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01"):
 
@@ -27,7 +27,7 @@ class MDSConnector:
 
         options = chain["options"]
         for option in options:
-            print("Adding {} to Option {}".format(option["ID"], chain["name"]))
+            print("Adding {} to Option {}".format(option["ID"], chain["ID"]))
             optionData = self.mds.get(option["ID"])
             optionData["ID"] = option["ID"]
             optionData["instrumentName"] = option["instrumentName"]

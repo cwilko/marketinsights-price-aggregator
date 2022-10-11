@@ -17,12 +17,12 @@ class OHLCFileParser:
 
         options = self.options
 
-        existingData = pandas.DataFrame()
+        existingData = pandas.DataFrame(index=pandas.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
 
         # Loop over any source files...
         for infile in os.listdir(self.SRC_path):
 
-            if infile.lower().startswith(source["name"].lower()):
+            if infile.lower().startswith(source["ID"].lower()):
 
                 # Load RAW data (assume CSV)
                 newData = pandas.read_csv(self.SRC_path + infile,
@@ -39,6 +39,13 @@ class OHLCFileParser:
                     newData = ppl.cropDate(newData, start, end)
 
                     if not newData.empty:
+
+                        newData = newData \
+                            .assign(ID=source["ID"]) \
+                            .reset_index() \
+                            .set_index(["Date_Time", "ID"]) \
+                            .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64"}) \
+                            [["Open", "High", "Low", "Close"]]
 
                         newData = ppl.localize(newData, self.tz, "UTC")
 

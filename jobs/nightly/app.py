@@ -45,6 +45,50 @@ def appendOptionChainPrices(mds, ds_file):
 
     return options
 
+
+def fetchHistoricalData(mds, ds_file, start="1979-01-01", end="2050-01-01", records=200, delta=False, newOnly=False, debug=False):
+
+    datasources = json.load(open(ds_file))
+
+    data = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
+
+    for datasource in datasources:
+
+        dataConnector = getConnector(datasource["class"], datasource["ID"], datasource["timezone"], datasource["opts"])
+
+        for market in datasource["markets"]:
+
+            for source in market["sources"]:
+
+                # TODO Implement newOnly
+
+                if delta:
+                    try:
+                        start = mds.aggregate(market["ID"], [source["ID"]]).index.get_level_values("Date_Time")[-1]
+                        print(start)
+                        records = (datetime.utcnow() - start.to_pydatetime().replace(tzinfo=None)).days + 1
+                        print(records)
+                        start = start.strftime('%Y-%m-%d')
+                    except Exception as e:
+                        print(e)
+                        print("Could not find " + market["ID"])
+                        start = "1979-01-01"
+
+                newData = dataConnector.getData(market, source, start, end, records)
+
+                if newData is not None:
+
+                    print("Adding " + source["ID"] + " to " + market["ID"] + " table")
+
+                    if debug:
+                        print(newData)
+
+                    if mds is not None:
+                        mds.append(market["ID"], newData, update=True)
+
+                    data = ppl.merge(data, newData)
+
+    return data
 # run
 if __name__ == '__main__':
 
@@ -53,8 +97,10 @@ if __name__ == '__main__':
     MI_DATASOURCE_LOCATION = os.environ.get('MI_DATASOURCE_LOCATION')
     MI_PRICE_STORE_URL = os.environ.get('MI_PRICE_STORE_URL')
 
-    ds_location = "../datasources/datasources_BarChartOption.json"
+    ds_location = "../datasources/datasources.json"
 
     # Local Options
     mds = MarketDataStore(remote=True, location="http://pricestore.192.168.1.203.nip.io")
+
+    data = fetchHistoricalData(mds, ds_location, start=date.today(), records=1, debug=True)
     options = appendOptionChainPrices(mds, ds_location)

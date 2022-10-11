@@ -8,6 +8,7 @@ test/data
 **/test-reports
 **/*egg-info
 *.hdf
+*.pkl
 datasources/*
 datastore/
 build/
