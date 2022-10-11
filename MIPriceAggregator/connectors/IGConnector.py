@@ -24,20 +24,25 @@ class IGConnector:
         start = str(datetime.strptime(start, '%Y-%m-%d'))
         end = str(datetime.strptime(end, '%Y-%m-%d'))
 
-        result = self.ig_service.fetch_historical_prices_by_epic_and_date_range(epic=source["name"], resolution=options["interval"], start_date=start, end_date=end)
-        data = result["prices"]["bid"]
+        result = self.ig_service.fetch_historical_prices_by_epic_and_date_range(epic=source["ID"], resolution=options["interval"], start_date=start, end_date=end)
+        data = result["prices"]["bid"] \
+            .assign(ID=source["ID"]) \
+            .reset_index() \
+            .rename(columns={"DateTime": "Date_Time"}) \
+            .set_index(["Date_Time", "ID"]) \
+            .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64"}) \
+            [["Open", "High", "Low", "Close"]]
 
-        if (data.index.tz is None):
+        if (data.index.get_level_values("Date_Time").tz is None):
             data = ppl.localize(data, self.tz, self.tz)
-        data.index.name = "Date_Time"
 
-        return data[["Open", "High", "Low", "Close"]]
+        return data
 
     def getOptions(self, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01"):
 
         # Options menu id = 195913
         optionData = self.ig_service.fetch_sub_nodes_by_node("195913")["nodes"]
-        option = optionData[optionData["name"] == chain["name"]]
+        option = optionData[optionData["name"] == chain["ID"]]
         optionId = option["id"].values[0]
 
         # Fetch strike prices
@@ -60,7 +65,8 @@ class IGConnector:
         data["underlying"] = underlyingPrice
         data["Date_Time"] = date.today()
 
-        data = data.reset_index().set_index(["Date_Time", "epic"])
-        data = data.sort_values("strike")
+        data = data.reset_index() \
+            .rename(columns={"epic": "ID"}) \
+            .set_index(["Date_Time", "ID"])
 
         return data[["instrumentName", "type", "strike", "expiry", "underlying", "ask", "bid"]]

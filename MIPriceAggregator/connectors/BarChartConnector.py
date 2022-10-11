@@ -92,7 +92,7 @@ class BarChartConnector:
 
     def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=200, debug=False):
 
-        resp = self.get_api_data(self.historicalUrl, self.construct_quotes_payload(source["name"], count=records), debug)
+        resp = self.get_api_data(self.historicalUrl, self.construct_quotes_payload(source["ID"], count=records), debug)
 
         if resp["count"] == 0:
             return None
@@ -101,15 +101,14 @@ class BarChartConnector:
         if data is not None:
             data = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
                 .replace('NA', np.nan) \
-                .replace(np.nan, 0) \
                 .apply(pd.to_numeric, errors='ignore') \
-                .assign(ID=source["name"]) \
+                .assign(ID=source["ID"]) \
                 .rename(columns={"tradeTime": "Date_Time"}) \
                 .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time'])) \
                 .set_index(["Date_Time", "ID"])
 
             data.columns = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
-            data = data.astype(dtype={"Open": "float64", "High": "float64", "Low": "float64", "Close": "float64", "Volume": "int64", "OpenInterest": "int64"})
+            data = data.astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64", "OpenInterest": "Float64"})
 
         if (data.index.get_level_values("Date_Time").tz is None):
             data = ppl.localize(data, self.tz, self.tz)
@@ -118,7 +117,7 @@ class BarChartConnector:
 
     def getOptions(self, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01", debug=False):
 
-        resp = self.get_api_data(self.apiUrl, self.construct_options_payload(chain["name"]), debug)
+        resp = self.get_api_data(self.apiUrl, self.construct_options_payload(chain["ID"]), debug)
 
         if resp["count"] == 0:
             return None
@@ -127,13 +126,12 @@ class BarChartConnector:
         if data is not None:
             data = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
                 .replace('NA', np.nan) \
-                .replace(np.nan, 0) \
                 .apply(pd.to_numeric, errors='ignore') \
                 .assign(optionType=lambda x: [t.lower()[0] for t in x["optionType"]]) \
                 .assign(Date_Time=date.today()) \
                 .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time']))
             data.columns = ["ID", "instrumentName", "type", "strike", "Open", "High", "Low", "Close", "Volume", "OpenInterest", "Date_Time"]
-            data = data.astype(dtype={"Open": "float64", "High": "float64", "Low": "float64", "Close": "float64", "Volume": "int64", "OpenInterest": "int64"})
+            data = data.astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64", "OpenInterest": "Float64"})
         data["underlying"] = chain["underlying"]
         underlyingPrice = np.nan
         if appendUnderlying:
@@ -167,7 +165,7 @@ class BarChartConnector:
                 .replace('NA', np.nan) \
                 .assign(underlying=lambda x: x["symbol"]) \
                 .apply(pd.to_numeric, errors='ignore')
-            data.columns = ["name", "instrumentName", "expiry", "underlying"]
+            data.columns = ["ID", "instrumentName", "expiry", "underlying"]
         return data
 
     def getOptionInfo(self, chain):

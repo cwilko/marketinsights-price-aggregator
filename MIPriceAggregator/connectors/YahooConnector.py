@@ -18,11 +18,12 @@ class YahooConnector:
         #json_prices = YahooFinancials([stock_symbol])
         #    .get_historical_price_data(options["start"], options["end"], options["interval"])
 
-        data = yf.download(tickers=source["name"], start=start, end=end, interval=options["interval"], prepost=False) \
-            .assign(ID=source["name"]) \
+        data = yf.download(tickers=source["ID"], start=start, end=end, interval=options["interval"], prepost=False) \
+            .assign(ID=source["ID"]) \
             .reset_index() \
             .rename(columns={"Date": "Date_Time"}) \
             .set_index(["Date_Time", "ID"]) \
+            .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64"}) \
             [["Open", "High", "Low", "Close", "Volume"]]
 
         if (data.index.get_level_values("Date_Time").tz is None):
