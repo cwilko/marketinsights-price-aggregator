@@ -19,29 +19,30 @@ def appendOptionChainPrices(mds, ds_file):
 
     datasources = json.load(open(ds_file))
     mdsKeys = mds.getKeys()
+    options = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
+
     for datasource in datasources:
 
-        dataConnector = getConnector(datasource["class"], datasource["name"], datasource["timezone"], datasource["opts"])
+        dataConnector = getConnector(datasource["class"], datasource["ID"], datasource["timezone"], datasource["opts"])
 
         for market in datasource["markets"]:
 
-            options = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
+            if "optionChains" in market:
 
-            for optionChain in market["optionChains"]:
+                for optionChain in market["optionChains"]:
 
-                # Get todays prices from optionChain
-                print("Requesting " + optionChain["name"])
-                optionData = dataConnector.getOptions(optionChain, appendUnderlying=False, debug=False)
+                    # Get todays prices from optionChain
+                    print("Requesting " + optionChain["ID"])
+                    optionData = dataConnector.getOptions(optionChain, appendUnderlying=False, debug=False)
 
-                if optionData is not None:
+                    if optionData is not None:
 
-                    optionData = optionData.replace(np.nan, 0).sort_values(["expiry", "strike"])[["Open", "High", "Low", "Close", "Volume", "OpenInterest"]]
+                        optionData = optionData.sort_values(["expiry", "strike"])[["Open", "High", "Low", "Close", "Volume", "OpenInterest"]]
+                        options = ppl.merge(options, optionData)
 
-                    options = ppl.merge(options, optionData)
-
-            if mds is not None and market["name"] in mdsKeys:
-                print("Adding " + optionChain["name"] + " to " + market["name"] + " table")
-                mds.append(market["name"], options, update=True, debug=True)
+                if mds is not None and market["ID"] in mdsKeys:
+                    print("Adding " + optionChain["ID"] + " to " + market["ID"] + " table")
+                    mds.append(market["ID"], options, update=True, debug=True)
 
     return options
 
@@ -102,5 +103,5 @@ if __name__ == '__main__':
     # Local Options
     mds = MarketDataStore(remote=True, location="http://pricestore.192.168.1.203.nip.io")
 
-    data = fetchHistoricalData(mds, ds_location, start=date.today(), records=1, debug=True)
-    options = appendOptionChainPrices(mds, ds_location)
+    appendOptionChainPrices(mds, ds_location)
+    fetchHistoricalData(mds, ds_location, start=date.today(), records=1, debug=True)
