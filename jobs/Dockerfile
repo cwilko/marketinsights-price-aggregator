@@ -10,9 +10,12 @@ WORKDIR /usr/app/nightly
 
 
 RUN apt-get -y update && \
-    apt-get -y install --no-install-recommends libatlas3-base git && \
+    apt-get -y install --no-install-recommends libatlas3-base llvm-9 git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+RUN LLVM_CONFIG=llvm-config-9 \
+    pip install --extra-index-url https://www.piwheels.org/simple llvmlite==0.33
 
 RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
 

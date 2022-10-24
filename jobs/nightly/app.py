@@ -15,10 +15,15 @@ def getConnector(connClass, connName, tz, options):
     return connectorInstance
 
 
-def appendOptionChainPrices(mds, ds_file):
+def fetchHistoricalOptionData(mds, ds_file, start="1979-01-01", end="2050-01-01", records=200, refreshUnderyling=False, dry_run=False, debug=False):
 
     datasources = json.load(open(ds_file))
-    mdsKeys = mds.getKeys()
+
+    data = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
+
+    # First ensure that all underlying date is updated
+    if refreshUnderyling:
+        fetchHistoricalData(mds, ds_file, start=start, end=end, records=records, debug=debug)
 
     for datasource in datasources:
 
@@ -26,25 +31,28 @@ def appendOptionChainPrices(mds, ds_file):
 
         for market in datasource["markets"]:
 
-            options = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
+            dataConnector.setState({"marketData": mds.get(market["ID"])})
+
             if "optionChains" in market:
 
                 for optionChain in market["optionChains"]:
 
-                    # Get todays prices from optionChain
-                    print("Requesting " + optionChain["ID"])
-                    optionData = dataConnector.getOptions(optionChain, appendUnderlying=False, debug=False)
+                    # TODO: Implement newOnly
 
-                    if optionData is not None:
+                    newData = dataConnector.getOptionData(optionChain, start, end, records, debug=False)
 
-                        optionData = optionData.sort_values(["expiry", "strike"])[["Open", "High", "Low", "Close", "Volume", "OpenInterest"]]
-                        options = ppl.merge(options, optionData)
+                    if newData is not None:
 
-                if mds is not None and market["ID"] in mdsKeys:
-                    print("Adding option data to " + market["ID"] + " table")
-                    mds.append(market["ID"], options, update=True, debug=True)
+                        print("Adding " + optionChain["ID"] + " to " + market["ID"] + " table")
 
-    return options
+                        if debug:
+                            print(newData)
+
+                        if not dry_run:
+                            mds.append(market["ID"] + "_Options", newData, update=True)
+
+                        data = ppl.merge(data, newData)
+    return data
 
 
 def fetchHistoricalData(mds, ds_file, start="1979-01-01", end="2050-01-01", records=200, delta=False, newOnly=False, debug=False):
@@ -102,7 +110,5 @@ if __name__ == '__main__':
 
     # Local Options
     mds = MarketDataStore(remote=True, location="http://pricestore.192.168.1.203.nip.io")
-
-    fetchHistoricalData(mds, ds_location, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, debug=True)
-    appendOptionChainPrices(mds, ds_location)
+    fetchHistoricalOptionData(mds, ds_location, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, refreshUnderyling=False, debug=True)
     print("Updates complete at " + str(datetime.utcnow()))
