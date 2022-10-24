@@ -1,8 +1,9 @@
 import yfinance as yf
 import quantutils.dataset.pipeline as ppl
+from MIPriceAggregator.connectors.Connector import Connector
 
 
-class YahooConnector:
+class YahooConnector(Connector):
 
     def __init__(self, dsName, tz, options):
         self.dsName = dsName
@@ -30,3 +31,36 @@ class YahooConnector:
             data = ppl.localize(data, self.tz, self.tz)
 
         return data
+
+# TODO : Turn this into getOptions()
+
+
+class MIOptions:
+
+    def __init__(self, symbol):
+
+        optionsX = pd.DataFrame()
+        stocklist = [symbol]
+        for x in stocklist:
+            tk = yf.Ticker(x)
+            exps = tk.options  # expiration dates
+            try:
+                underlying = yf.download(tickers=symbol, period="1d", interval="1d", prepost=False)["Close"].values[0]
+
+                for e in exps:
+                    print(e)
+                    opt = tk.option_chain(e)
+                    opt.calls["type"] = "call"
+                    opt.puts["type"] = "put"
+                    opt = pd.DataFrame().append(opt.calls).append(opt.puts)
+                    opt['expiry'] = datetime.strptime(e + " 21:00:00", "%Y-%m-%d %H:%M:%S")
+                    opt['ticker'] = x
+                    opt["underlying"] = underlying
+                    optionsX = optionsX.append(opt, ignore_index=True)
+            except(e):
+                print("Error " + e)
+
+        self.option = optionsX
+
+    def get_all_data(self):
+        return self.option

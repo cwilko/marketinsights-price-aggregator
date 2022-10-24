@@ -1,3 +1,4 @@
+from MIPriceAggregator.connectors.Connector import Connector
 from datetime import datetime, date
 from trading_ig.rest import IGService, ApiExceededException
 from tenacity import Retrying, wait_exponential, retry_if_exception_type
@@ -6,7 +7,7 @@ import pandas as pd
 from dateutil import parser
 
 
-class IGConnector:
+class IGConnector(Connector):
 
     def __init__(self, dsName, tz, options):
         self.dsName = dsName
@@ -38,7 +39,7 @@ class IGConnector:
 
         return data
 
-    def getOptions(self, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01"):
+    def getOptions(self, market, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01"):
 
         # Options menu id = 195913
         optionData = self.ig_service.fetch_sub_nodes_by_node("195913")["nodes"]

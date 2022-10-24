@@ -1,9 +1,10 @@
 import pandas
 import os
 import quantutils.dataset.pipeline as ppl
+from MIPriceAggregator.connectors.Connector import Connector
 
 
-class OHLCFileParser:
+class OHLCFileParser(Connector):
 
     def __init__(self, dsName, tz, options):
         self.dsName = dsName
