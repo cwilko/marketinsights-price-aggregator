@@ -1,3 +1,4 @@
+from MIPriceAggregator.connectors.Connector import Connector
 from MIPriceAggregator.connectors.OHLCFileParser import OHLCFileParser
 from MIPriceAggregator.connectors.YahooConnector import YahooConnector
 from MIPriceAggregator.connectors.IGConnector import IGConnector

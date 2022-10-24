@@ -1,19 +1,22 @@
+from MIPriceAggregator.connectors.Connector import Connector
 import requests
 import pandas as pd
 import numpy as np
 import quantutils.dataset.pipeline as ppl
+import quantutils.core.options as opt_utils
 from datetime import datetime, date, timedelta
 from urllib.parse import unquote
 import time
 from random import randint
 
 
-class BarChartConnector:
+class BarChartConnector(Connector):
 
     def __init__(self, dsName, tz, opts):
         self.dsName = dsName
         self.opts = opts
         self.tz = tz
+        self.marketData = None
 
         # Random url to generate a cookie
         sessionUrl = r'https://www.barchart.com/futures/quotes/CLX22/options/nov-22'
@@ -90,6 +93,10 @@ class BarChartConnector:
             print(params)
         return None
 
+    def setState(self, state):
+        if "marketData" in state:
+            self.marketData = state["marketData"].reset_index().set_index("Date_Time")
+
     def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=200, debug=False):
 
         resp = self.get_api_data(self.historicalUrl, self.construct_quotes_payload(source["ID"], count=records), debug)
@@ -115,39 +122,84 @@ class BarChartConnector:
 
         return data
 
-    def getOptions(self, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01", debug=False):
+    def getOptionData(self, chain, start="1979-01-01", end="2050-01-01", records=200, debug=False):
+
+        if records == 1:
+            return self.getOptionChain(chain, start, end, debug)
+
+        optionData = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
+
+        for option in chain["options"]:
+            resp = self.get_api_data(self.historicalUrl, self.construct_quotes_payload(option["ID"], count=records), debug)
+
+            if resp["count"] == 0:
+                return None
+
+            underlying = self.marketData[self.marketData["ID"] == chain["underlying"]]
+
+            data = resp["data"]
+            if data is not None:
+                data = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
+                    .replace('NA', np.nan) \
+                    .apply(pd.to_numeric, errors='ignore') \
+                    .rename(columns={"tradeTime": "Date_Time", "openPrice": "Open", "highPrice": "High", "lowPrice": "Low", "lastPrice": "Close", "volume": "Volume", "openInterest": "OpenInterest"}) \
+                    .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time'], utc=True)) \
+                    .assign(instrumentName=option["instrumentName"]) \
+                    .assign(expiry=datetime.strptime(chain["expiry"], '%Y-%m-%d')) \
+                    .assign(timeToExpiry=lambda x: [((exp.days * 24. * 3600. + exp.seconds + 3600) / (24. * 3600.)) for exp in (x['expiry'].sub(x['Date_Time']))]) \
+                    .assign(bid=lambda x: x['Close']) \
+                    .assign(ask=lambda x: x['Close']) \
+                    .assign(underlyingSymbol=chain["underlying"]) \
+                    .assign(underlying=lambda x: self.addUnderlyingValues(x, underlying)) \
+                    .assign(strike=float(option["strike"])) \
+                    .assign(type=option["type"]) \
+                    .assign(IV=lambda x: opt_utils.get_IV(x)) \
+                    .assign(ID=option["ID"]) \
+                    .set_index(["Date_Time", "ID"])
+
+                data = data.astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64", "OpenInterest": "Float64", "strike": "Float64"})
+
+                if (data.index.get_level_values("Date_Time").tz is None):
+                    data = ppl.localize(data, self.tz, self.tz)
+
+                if debug:
+                    print("Adding " + option["ID"])
+
+                optionData = pd.concat([optionData, data])
+
+        return optionData
+
+    def getOptionChain(self, chain, start="1979-01-01", end="2050-01-01", debug=False):
 
         resp = self.get_api_data(self.apiUrl, self.construct_options_payload(chain["ID"]), debug)
 
         if resp["count"] == 0:
             return None
 
+        underlying = self.marketData[self.marketData["ID"] == chain["underlying"]]
+
         data = resp["data"]
         if data is not None:
             data = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
                 .replace('NA', np.nan) \
                 .apply(pd.to_numeric, errors='ignore') \
-                .assign(optionType=lambda x: [t.lower()[0] for t in x["optionType"]]) \
+                .rename(columns={"dailyOpenPrice": "Open", "dailyHighPrice": "High", "dailyLowPrice": "Low", "dailyLastPrice": "Close", "dailyVolume": "Volume", "dailyOpenInterest": "OpenInterest", "strikePrice": "strike", "longSymbol": "ID", "symbolName": "instrumentName", "optionType": "type"}) \
                 .assign(Date_Time=date.today()) \
-                .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time']))
-            data.columns = ["ID", "instrumentName", "type", "strike", "Open", "High", "Low", "Close", "Volume", "OpenInterest", "Date_Time"]
+                .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time'], utc=True)) \
+                .assign(expiry=datetime.strptime(chain["expiry"], '%Y-%m-%d')) \
+                .assign(timeToExpiry=lambda x: [((exp.days * 24. * 3600. + exp.seconds + 3600) / (24. * 3600.)) for exp in (x['expiry'].sub(x['Date_Time']))]) \
+                .assign(bid=lambda x: x['Close']) \
+                .assign(ask=lambda x: x['Close']) \
+                .assign(underlyingSymbol=chain["underlying"]) \
+                .assign(underlying=lambda x: self.addUnderlyingValues(x, underlying)) \
+                .assign(type=lambda x: [t.lower()[0] for t in x["type"]]) \
+                .assign(IV=lambda x: opt_utils.get_IV(x)) \
+                .set_index(["Date_Time", "ID"])
+
             data = data.astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64", "OpenInterest": "Float64"})
-        data["underlying"] = chain["underlying"]
-        underlyingPrice = np.nan
-        if appendUnderlying:
-            underlyingData = self.get_api_data(self.apiUrl, self.construct_quotes_payload(chain["underlying"], count=1))
-            underlyingPrice = underlyingData[-1]["raw"]["lastPrice"]
-        data["underlyingPrice"] = underlyingPrice
 
-        data["ask"] = data["Close"]
-        data["bid"] = data["Close"]
-        data["expiry"] = datetime.strptime(chain["expiry"], '%Y-%m-%d')
-
-        data = data.reset_index().set_index(["Date_Time", "ID"])
-
-        if (data.index.get_level_values("Date_Time").tz is None):
-            data = ppl.localize(data, self.tz, self.tz)
-        data = data.sort_values("strike")
+            if (data.index.get_level_values("Date_Time").tz is None):
+                data = ppl.localize(data, self.tz, self.tz)
 
         return data
 
@@ -168,7 +220,7 @@ class BarChartConnector:
             data.columns = ["ID", "instrumentName", "expiry", "underlying"]
         return data
 
-    def getOptionInfo(self, chain):
+    def getOptionChainInfo(self, chain):
 
         infoUrl = "https://www.barchart.com/symbols/{}/modules/dashboard?symbolType=2&symbolCode=FUT&hasOptions=0"
         return self.get_api_data(infoUrl.format(chain))["dashboard-commodity-profile"]["data"][0]["raw"]
