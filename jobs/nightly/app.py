@@ -110,5 +110,5 @@ if __name__ == '__main__':
 
     # Local Options
     mds = MarketDataStore(remote=True, location="http://pricestore.192.168.1.203.nip.io")
-    fetchHistoricalOptionData(mds, ds_location, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, refreshUnderyling=False, debug=True)
+    fetchHistoricalOptionData(mds, ds_location, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, refreshUnderyling=True, debug=True)
     print("Updates complete at " + str(datetime.utcnow()))
