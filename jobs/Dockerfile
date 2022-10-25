@@ -1,4 +1,4 @@
-FROM arm32v7/python:3.7-slim-buster
+FROM arm32v7/python:3.9-slim-bullseye
 
 COPY qemu-arm-static /usr/bin
 
@@ -10,12 +10,12 @@ WORKDIR /usr/app/nightly
 
 
 RUN apt-get -y update && \
-    apt-get -y install --no-install-recommends libatlas3-base llvm-11 git && \
+    apt-get -y install --no-install-recommends libatlas3-base llvm-9 git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN LLVM_CONFIG=llvm-config-11 \
-    pip install --extra-index-url https://www.piwheels.org/simple llvmlite
+RUN LLVM_CONFIG=llvm-config-9 \
+    pip install --extra-index-url https://www.piwheels.org/simple llvmlite=0.33
 
 RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
 
