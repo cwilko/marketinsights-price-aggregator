@@ -15,7 +15,7 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN LLVM_CONFIG=llvm-config-9 \
-    pip install --extra-index-url https://www.piwheels.org/simple llvmlite=0.33
+    pip install --extra-index-url https://www.piwheels.org/simple llvmlite==.33
 
 RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
 
