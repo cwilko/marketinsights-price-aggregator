@@ -21,7 +21,7 @@ COPY qemu-arm-static /usr/bin
 COPY --from=compile-image /opt/venv /opt/venv
 
 RUN apt-get -y update && \
-    apt-get -y install --no-install-recommends libatlas3-base && \
+    apt-get -y install --no-install-recommends libatlas3-base llvm-11-runtime && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

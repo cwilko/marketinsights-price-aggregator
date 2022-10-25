@@ -146,6 +146,7 @@ class BarChartConnector(Connector):
                     .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time'], utc=True)) \
                     .assign(instrumentName=option["instrumentName"]) \
                     .assign(expiry=datetime.strptime(chain["expiry"], '%Y-%m-%d')) \
+                    .assign(expiry=lambda x: pd.to_datetime(x['expiry'], utc=True)) \
                     .assign(timeToExpiry=lambda x: [((exp.days * 24. * 3600. + exp.seconds + 3600) / (24. * 3600.)) for exp in (x['expiry'].sub(x['Date_Time']))]) \
                     .assign(bid=lambda x: x['Close']) \
                     .assign(ask=lambda x: x['Close']) \
@@ -187,6 +188,7 @@ class BarChartConnector(Connector):
                 .assign(Date_Time=date.today()) \
                 .assign(Date_Time=lambda x: pd.to_datetime(x['Date_Time'], utc=True)) \
                 .assign(expiry=datetime.strptime(chain["expiry"], '%Y-%m-%d')) \
+                .assign(expiry=lambda x: pd.to_datetime(x['expiry'], utc=True)) \
                 .assign(timeToExpiry=lambda x: [((exp.days * 24. * 3600. + exp.seconds + 3600) / (24. * 3600.)) for exp in (x['expiry'].sub(x['Date_Time']))]) \
                 .assign(bid=lambda x: x['Close']) \
                 .assign(ask=lambda x: x['Close']) \
