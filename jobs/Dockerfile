@@ -1,4 +1,4 @@
-FROM arm32v7/python:3.9-slim-bullseye AS compile_image
+FROM arm32v7/python:3.9-slim-bullseye AS compile-image
 
 COPY qemu-arm-static /usr/bin
 COPY nightly/requirements.txt .
@@ -14,7 +14,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN LLVM_CONFIG=llvm-config-9 pip install llvmlite==0.33
 RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
 
-FROM arm32v7/python:3.9-slim-bullseye AS build_image
+FROM arm32v7/python:3.9-slim-bullseye AS build-image
 
 COPY qemu-arm-static /usr/bin
 COPY --from=compile-image /opt/venv /opt/venv
