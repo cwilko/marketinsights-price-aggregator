@@ -11,7 +11,8 @@ RUN apt-get -y update && \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN LLVM_CONFIG=llvm-config-11 pip install wheel llvmlite==0.39.1
+RUN pip install wheel 
+RUN LLVM_CONFIG=llvm-config-11 pip install llvmlite==0.39.1
 RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
 
 FROM arm32v7/python:3.7-slim-buster AS build-image
@@ -20,7 +21,7 @@ COPY qemu-arm-static /usr/bin
 COPY --from=compile-image /opt/venv /opt/venv
 
 RUN apt-get -y update && \
-    apt-get -y install --no-install-recommends libatlas3-base \
+    apt-get -y install --no-install-recommends libatlas3-base && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
