@@ -10,7 +10,7 @@ WORKDIR /usr/app/nightly
 
 
 RUN apt-get -y update && \
-    apt-get -y install --no-install-recommends libatlas3-base llvm-9 llvm-9-dev git && \
+    apt-get -y install --no-install-recommends libatlas3-base llvm-9 llvm-9-dev gcc git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
