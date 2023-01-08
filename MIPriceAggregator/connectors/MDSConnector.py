@@ -1,7 +1,7 @@
 from MIPriceAggregator.connectors.Connector import Connector
 from datetime import datetime, date
 import quantutils.dataset.pipeline as ppl
-from quantutils.api.datasource import MarketDataStore
+from MIPriceStore.api.datasource import MIDataStore
 import pandas as pd
 import numpy as np
 from dateutil import parser
@@ -15,17 +15,17 @@ class MDSConnector(Connector):
         self.tz = tz
         self.marketData = None
 
-        self.mds = MarketDataStore(remote=opts["remote"], location=opts["location"])
+        self.mds = MIDataStore(remote=opts["remote"], location=opts["location"])
 
     def setState(self, state):
         if "marketData" in state:
             self.marketData = state["marketData"]
 
-    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=0):
+    def getData(self, market, source, start, end, records, debug):
 
         return self.mds.aggregate(market["ID"], [source["ID"]], start, end)
 
-    def getOptionData(self, chain, option, start="1979-01-01", end="2050-01-01", records=0):
+    def getOptionData(self, chain, start, end, records, debug):
 
         underlying = self.marketData.loc[pd.IndexSlice[:, [chain["underlying"]]], :]
 
