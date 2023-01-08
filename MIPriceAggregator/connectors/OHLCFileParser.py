@@ -14,7 +14,7 @@ class OHLCFileParser(Connector):
         DS_path = options["root"] + "/" + dsName + "/"
         self.SRC_path = DS_path + "raw/"
 
-    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=0):
+    def getData(self, market, source, start, end, records, debug):
 
         options = self.options
 

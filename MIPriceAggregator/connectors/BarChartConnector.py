@@ -95,9 +95,11 @@ class BarChartConnector(Connector):
 
     def setState(self, state):
         if "marketData" in state:
-            self.marketData = state["marketData"].reset_index().set_index("Date_Time")
+            self.marketData = state["marketData"]
+            if self.marketData is not None:
+                self.marketData = self.marketData.reset_index().set_index("Date_Time")
 
-    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=200, debug=False):
+    def getData(self, market, source, start, end, records, debug):
 
         resp = self.get_api_data(self.historicalUrl, self.construct_quotes_payload(source["ID"], count=records), debug)
 
@@ -122,7 +124,7 @@ class BarChartConnector(Connector):
 
         return data
 
-    def getOptionData(self, chain, start="1979-01-01", end="2050-01-01", records=200, debug=False):
+    def getOptionData(self, chain, start, end, records, debug):
 
         if records == 1:
             return self.getOptionChain(chain, start, end, debug)
@@ -134,8 +136,6 @@ class BarChartConnector(Connector):
 
             if resp["count"] == 0:
                 return None
-
-            underlying = self.marketData[self.marketData["ID"] == chain["underlying"]]
 
             data = resp["data"]
             if data is not None:
@@ -151,7 +151,7 @@ class BarChartConnector(Connector):
                     .assign(bid=lambda x: x['Close']) \
                     .assign(ask=lambda x: x['Close']) \
                     .assign(underlyingSymbol=chain["underlying"]) \
-                    .assign(underlying=lambda x: self.addUnderlyingValues(x, underlying)) \
+                    .assign(underlying=lambda x: self.addUnderlyingValues(x, self.marketData, chain["underlying"])) \
                     .assign(strike=float(option["strike"])) \
                     .assign(type=option["type"]) \
                     .assign(IV=lambda x: opt_utils.get_IV(x)) \
@@ -177,8 +177,6 @@ class BarChartConnector(Connector):
         if resp["count"] == 0:
             return None
 
-        underlying = self.marketData[self.marketData["ID"] == chain["underlying"]]
-
         data = resp["data"]
         if data is not None:
             data = pd.DataFrame.from_records([quote["raw"] for quote in data]) \
@@ -193,7 +191,7 @@ class BarChartConnector(Connector):
                 .assign(bid=lambda x: x['Close']) \
                 .assign(ask=lambda x: x['Close']) \
                 .assign(underlyingSymbol=chain["underlying"]) \
-                .assign(underlying=lambda x: self.addUnderlyingValues(x, underlying)) \
+                .assign(underlying=lambda x: self.addUnderlyingValues(x, self.marketData, chain["underlying"])) \
                 .assign(type=lambda x: [t.lower()[0] for t in x["type"]]) \
                 .assign(IV=lambda x: opt_utils.get_IV(x)) \
                 .set_index(["Date_Time", "ID"])

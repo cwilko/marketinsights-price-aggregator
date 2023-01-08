@@ -18,7 +18,7 @@ class IGConnector(Connector):
         self.ig_service = IGService(options["IG_user"], options["IG_pw"], options["IG_apikey"], "DEMO", options["IG_account_no"], retryer=retryer)
         self.ig_service.create_session(version='3')
 
-    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=0):
+    def getData(self, market, source, start, end, records, debug):
 
         options = self.options
 
@@ -39,7 +39,7 @@ class IGConnector(Connector):
 
         return data
 
-    def getOptions(self, market, chain, appendUnderlying=True, start="1979-01-01", end="2050-01-01"):
+    def getOptions(self, chain, start, end, records, debug):
 
         # Options menu id = 195913
         optionData = self.ig_service.fetch_sub_nodes_by_node("195913")["nodes"]

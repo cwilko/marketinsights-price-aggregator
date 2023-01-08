@@ -10,7 +10,7 @@ class YahooConnector(Connector):
         self.options = options
         self.tz = tz
 
-    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=0, debug=False):
+    def getData(self, market, source, start, end, records, debug):
 
         # set stock ticker symbol
         options = self.options

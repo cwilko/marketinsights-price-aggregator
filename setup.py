@@ -1,8 +1,6 @@
 
 from setuptools import setup, find_packages
 
-import os
-
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
@@ -44,6 +42,6 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    packages=find_packages(exclude=['contrib', 'docs', 'tests'])  # Required
+    packages=find_packages(exclude=['contrib', 'docs', 'test', 'build', 'docker', 'notebooks'])  # Required
 
 )

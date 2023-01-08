@@ -6,11 +6,16 @@ class Connector:
     def setState(self, state):
         pass
 
-    def getData(self, market, source, start, end, records):
+    def getData(self, market, source, start, end, records, debug):
         pass
 
-    def getOptions(self, market, chain, appendUnderlying, start, end):
+    def getOptions(self, chain, start, end, records, debug):
         pass
 
-    def addUnderlyingValues(self, optionData, underlying):
+    def addUnderlyingValues(self, optionData, marketData, underlyingSymbol):
+
+        if marketData is None:
+            return np.nan
+
+        underlying = marketData[marketData["ID"] == underlyingSymbol]
         return optionData.join(underlying, lsuffix='_caller', on="Date_Time")["Close"]
