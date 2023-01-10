@@ -1,7 +1,7 @@
 FROM arm32v7/python:3.7-slim-buster AS compile-image
 
 COPY qemu-arm-static /usr/bin
-COPY nightly/requirements.txt .
+COPY jobs/requirements.txt .
 
 RUN apt-get -y update && \
     apt-get -y install --no-install-recommends llvm-11 llvm-11-dev build-essential git && \
@@ -30,6 +30,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 RUN mkdir -p /usr/app
 COPY . /usr/app
-WORKDIR /usr/app/nightly
+WORKDIR /usr/app/jobs
 
 CMD ["python", "-u", "app.py"]
