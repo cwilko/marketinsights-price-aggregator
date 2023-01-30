@@ -23,43 +23,54 @@ class MarketDataSource:
 
 class MarketDataAggregator:
 
-    def __init__(self, datasources):
-        self.datasources = datasources
+    datasources = {}
 
-    def getData(self, market, sources, sample_unit, start="1979-01-01", end="2050-01-01", records=200, debug=False):
+    def __init__(self, config):
+        self.config = config
+        for datasource in config:
+            self.datasources[datasource["ID"]] = MarketDataSource(datasource["class"], options=datasource["opts"])
+
+    def getData(self, mkt, sample_unit, start="1979-01-01", end="2050-01-01", records=200, debug=False):
 
         marketData = None
         ID = ["Agg"]
 
-        for datasource in self.datasources:
+        for datasource in self.config:
 
-            for source in sources:
+            mds = self.datasources[datasource["ID"]]
 
-                data = datasource.getData(market, source, start, end, records, debug)
-                ID.append(source["ID"])
+            for market in datasource["markets"]:
 
-                if not data.empty:
+                # TODO: Remove this when multiple mkts supported
+                if market["ID"] == mkt:
 
-                    tsData = data[data.index.get_level_values('ID') == source["ID"]] \
-                        .reset_index() \
-                        .set_index("Date_Time")[["Open", "High", "Low", "Close"]]
+                    for source in market["sources"]:
 
-                    # 28/6/21 Move this to before data is saved for performance reasons
-                    # Resample all to dataset sample unit (to introduce nans in all missing periods)
-                    tsData = ppl.resample(tsData, source["sample_unit"], debug)
+                        data = mds.getData(market, source, start, end, records, debug)
+                        ID.append(source["ID"])
 
-                    # Resample to the requested unit
-                    tsData = ppl.resample(tsData, sample_unit, debug)
+                        if not data.empty:
 
-                    # 06/06/18
-                    # Remove NaNs and resample again, to remove partial NaN entries before merging
-                    tsData = ppl.removeNaNs(tsData)
-                    tsData = ppl.resample(tsData, sample_unit, debug)
+                            tsData = data[data.index.get_level_values('ID') == source["ID"]] \
+                                .reset_index() \
+                                .set_index("Date_Time")[["Open", "High", "Low", "Close"]]
 
-                    if marketData is None:
-                        marketData = pandas.DataFrame()
+                            # 28/6/21 Move this to before data is saved for performance reasons
+                            # Resample all to dataset sample unit (to introduce nans in all missing periods)
+                            tsData = ppl.resample(tsData, source["sample_unit"], debug)
 
-                    marketData = ppl.merge(tsData, marketData)
+                            # Resample to the requested unit
+                            tsData = ppl.resample(tsData, sample_unit, debug)
+
+                            # 06/06/18
+                            # Remove NaNs and resample again, to remove partial NaN entries before merging
+                            tsData = ppl.removeNaNs(tsData)
+                            tsData = ppl.resample(tsData, sample_unit, debug)
+
+                            if marketData is None:
+                                marketData = pandas.DataFrame()
+
+                            marketData = ppl.merge(tsData, marketData)
 
         if marketData is not None:
             marketData["ID"] = ':'.join(ID)
