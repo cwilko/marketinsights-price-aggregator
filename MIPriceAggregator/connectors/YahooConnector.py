@@ -27,7 +27,7 @@ class YahooConnector(Connector):
             .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64"}) \
             [["Open", "High", "Low", "Close", "Volume"]]
 
-        if (data.index.get_level_values("Date_Time").tz is None):
+        if not hasattr(data.index.get_level_values("Date_Time"), "tz") or data.index.get_level_values("Date_Time").tz is None:
             data = ppl.localize(data, self.tz, self.tz)
 
         return data
