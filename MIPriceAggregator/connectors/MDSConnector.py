@@ -1,6 +1,6 @@
 from MIPriceAggregator.connectors.Connector import Connector
 from datetime import datetime, date
-from MIPriceStore.api.datasource import MIDataStore
+from quantutils.api.datasource import MIDataStoreRemote
 import pandas as pd
 import numpy as np
 from dateutil import parser
@@ -14,7 +14,7 @@ class MDSConnector(Connector):
         self.tz = tz
         self.marketData = None
 
-        self.mds = MIDataStore(remote=opts["remote"], location=opts["location"])
+        self.mds = MIDataStoreRemote(location=opts["location"])
 
     def setState(self, state):
         if "marketData" in state:
