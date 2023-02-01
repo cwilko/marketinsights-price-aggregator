@@ -1,6 +1,9 @@
-FROM arm32v7/python:3.7-slim-buster AS compile-image
+FROM arm64v8/python:3.9-slim-bullseye as target-arm64
 
-COPY qemu-arm-static /usr/bin
+FROM arm32v7/python:3.7-slim-buster as target-armv7
+
+FROM target-$TARGETARCH$TARGETVARIANT as compile-image
+
 COPY jobs/requirements.txt .
 
 RUN apt-get -y update && \
@@ -15,9 +18,8 @@ RUN pip install wheel
 RUN LLVM_CONFIG=llvm-config-11 pip install llvmlite==0.39.1
 RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
 
-FROM arm32v7/python:3.7-slim-buster AS build-image
+FROM target-$TARGETARCH$TARGETVARIANT AS build-image
 
-COPY qemu-arm-static /usr/bin
 COPY --from=compile-image /opt/venv /opt/venv
 
 RUN apt-get -y update && \
