@@ -2,7 +2,7 @@ import json
 import os
 import quantutils.dataset.pipeline as ppl
 from MIPriceAggregator.api.aggregator import MarketDataSource
-from MIPriceStore.api.datasource import MIDataStore
+from quantutils.api.datasource import MIDataStoreRemote
 import pandas as pd
 import numpy as np
 import time
@@ -103,6 +103,6 @@ if __name__ == '__main__':
     ds_location = "../datasources/datasources.json"
 
     # Local Options
-    mds = MIDataStore(remote=True, location="http://pricestore.192.168.1.203.nip.io")
+    mds = MIDataStoreRemote(location="http://pricestore.192.168.1.203.nip.io")
     fetchHistoricalOptionData(mds, ds_location, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, refreshUnderyling=True, debug=True)
     print("Updates complete at " + str(datetime.utcnow()))
