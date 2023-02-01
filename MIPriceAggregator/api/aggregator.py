@@ -20,6 +20,9 @@ class MarketDataSource:
     def getOptionData(self, chain, start="1979-01-01", end="2050-01-01", records=200, debug=False):
         return self.dataConnector.getOptionData(chain, start, end, records, debug)
 
+    def setState(self, state):
+        return self.dataConnector.setState(state)
+
 
 class MarketDataAggregator:
 

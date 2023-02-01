@@ -25,7 +25,7 @@ def fetchHistoricalOptionData(mds, ds_file, start="1979-01-01", end="2050-01-01"
 
         for market in datasource["markets"]:
 
-            dataConnector.setState({"marketData": mds.get(market["ID"])})
+            ds.setState({"marketData": mds.get(market["ID"])})
 
             if "optionChains" in market:
 
