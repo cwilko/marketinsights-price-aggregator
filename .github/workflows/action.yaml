@@ -27,5 +27,5 @@ jobs:
         with:
           context: docker
           push: true
-          platforms: linux/arm/v7, linux/arm64
+          platforms: linux/arm64
           tags: cwilko/marketinsights-price-aggregator:latest
