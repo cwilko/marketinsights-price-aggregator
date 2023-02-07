@@ -7,11 +7,11 @@ RUN apt-get -y update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /usr/app
+COPY . /usr/app
+WORKDIR /usr/app
+
 RUN pip install wheel
 RUN pip install -r requirements.txt
 
-RUN mkdir -p /usr/app
-COPY . /usr/app
-WORKDIR /usr/app/jobs
-
-CMD ["python", "-u", "app.py"]
+CMD ["python", "-u", "./jobs/app.py"]
