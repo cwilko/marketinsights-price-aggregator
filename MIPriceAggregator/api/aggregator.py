@@ -36,7 +36,6 @@ class MarketDataAggregator:
     def getData(self, mkt, sample_unit, start="1979-01-01", end="2050-01-01", records=200, debug=False):
 
         marketData = None
-        ID = ["Agg"]
 
         for datasource in self.config:
 
@@ -50,7 +49,6 @@ class MarketDataAggregator:
                     for source in market["sources"]:
 
                         data = mds.getData(market, source, start, end, records, debug)
-                        ID.append(source["ID"])
 
                         if not data.empty:
 
@@ -76,7 +74,7 @@ class MarketDataAggregator:
                             marketData = ppl.merge(tsData, marketData)
 
         if marketData is not None:
-            marketData["ID"] = ':'.join(ID)
+            marketData["ID"] = mkt
             marketData = marketData.reset_index().set_index(["Date_Time", "ID"])
 
         return marketData
