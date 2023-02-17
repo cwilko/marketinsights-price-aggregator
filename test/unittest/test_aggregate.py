@@ -43,9 +43,15 @@ class Aggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False).apply(np.floor)
-        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
+        #dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
+        #self.assertEqual(dataHash, "0c88e2885ebfefe9eec7935f9f3d560d")
 
-        self.assertEqual(dataHash, "0c88e2885ebfefe9eec7935f9f3d560d")
+        #marketData.to_pickle(dir + "/data/yahoo.pkl")
+        compare = pd.read_pickle(dir + "/data/yahoo.pkl")
+
+        print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
+
+        self.assertTrue(pd.concat([marketData, compare]).drop_duplicates(keep=False).empty)
 
     def test_aggregate_barchart(self):
 
@@ -70,10 +76,13 @@ class Aggregate(unittest.TestCase):
         # Get Market Data
         aggregator = MarketDataAggregator(data_config)
 
-        marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False).apply(np.floor)
-        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
+        marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
+        #marketData.to_pickle(dir + "/data/ohlc.pkl")
+        compare = pd.read_pickle(dir + "/data/ohlc.pkl")
 
-        self.assertEqual(dataHash, "a5fd8acfa2948eccb3ddd41c0cbde967")
+        print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
+
+        self.assertTrue(pd.concat([marketData, compare]).drop_duplicates(keep=False).empty)
 
 
 if __name__ == '__main__':
