@@ -47,8 +47,8 @@ class Aggregate(unittest.TestCase):
         end = "2013-01-05"
 
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False)
-        print(marketData)
-        dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
+        print(marketData.values.flatten())
+        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
 
         self.assertEqual(dataHash, "5dab60b5a46320fa4f9642e57215feb4")
 
