@@ -43,15 +43,15 @@ class Aggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False).apply(np.floor)
-        #dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
-        #self.assertEqual(dataHash, "0c88e2885ebfefe9eec7935f9f3d560d")
+        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
+        self.assertEqual(dataHash, "0c88e2885ebfefe9eec7935f9f3d560d")
 
         #marketData.to_pickle(dir + "/data/yahoo.pkl")
-        compare = pd.read_pickle(dir + "/data/yahoo.pkl")
+        #compare = pd.read_pickle(dir + "/data/yahoo.pkl")
 
-        print(marketData["2016-10-31":])
+        # print(marketData["2016-10-31":])
 
-        self.assertTrue(False)
+        # self.assertTrue(False)
 
     def test_aggregate_barchart(self):
 
