@@ -40,12 +40,12 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         start = "2013-01-01"
-        end = "2013-01-05"
+        end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False).apply(np.floor)
         dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
 
-        self.assertEqual(dataHash, "56a17bf74d2e7fd7ff704a09e0ca08bf")
+        self.assertEqual(dataHash, "39fda047652c4271aa174e6374246eca")
 
     def test_aggregate_barchart(self):
 
