@@ -24,7 +24,7 @@ class LocalAggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW"], "H", start, end, debug=False)
-        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
+        dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
 
         self.assertEqual(dataHash, "ca69b12d0df16cb57cf78d58a54815cb")
 
@@ -43,7 +43,7 @@ class Aggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False)
-        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
+        dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
 
         self.assertEqual(dataHash, "bf9994d649d619ad8f4c2256bfb3ec46")
 
@@ -56,7 +56,6 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         marketData = aggregator.getData(["WTICrudeOil"], "D", records=50, debug=False)
-        dataHash = pd.util.hash_pandas_object(marketData, hash_key='0123456789123456').astype(float).sum()
 
         self.assertEqual(marketData.dropna().shape, (50, 4))
 
@@ -72,7 +71,7 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
-        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
+        dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
 
         self.assertEqual(dataHash, "dd847dc7bed4097d184feb72a18dbb90")
 
