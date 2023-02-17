@@ -49,9 +49,9 @@ class Aggregate(unittest.TestCase):
         #marketData.to_pickle(dir + "/data/yahoo.pkl")
         compare = pd.read_pickle(dir + "/data/yahoo.pkl")
 
-        print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
+        print(marketData["2016-10-31":])
 
-        self.assertTrue(pd.concat([marketData, compare]).drop_duplicates(keep=False).empty)
+        self.assertTrue(False)
 
     def test_aggregate_barchart(self):
 
@@ -80,10 +80,11 @@ class Aggregate(unittest.TestCase):
         #marketData.to_pickle(dir + "/data/ohlc.pkl")
         compare = pd.read_pickle(dir + "/data/ohlc.pkl")
 
-        print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
+        print(print(pd.concat([marketData, compare]).drop_duplicates(keep=False)))
+        print(compare["2016-10-31":])
+        print(marketData["2016-10-31":])
 
-        self.assertTrue(pd.concat([marketData, compare]).drop_duplicates(keep=False).empty)
-
+        self.assertTrue(False)
 
 if __name__ == '__main__':
     unittest.main()
