@@ -31,6 +31,10 @@ class LocalAggregate(unittest.TestCase):
 
 class Aggregate(unittest.TestCase):
 
+    def test_hash(self):
+        hashstr = hashlib.sha1("IAMACAT".encode('utf-8')).hexdigest()
+        self.assertEqual(hashstr, "c5ef8947859cf6a3a7fcdd57ce683865baac61e1")
+
     def test_aggregate_yahoo(self):
 
         with open(dir + "/data/config2.json") as json_file:
