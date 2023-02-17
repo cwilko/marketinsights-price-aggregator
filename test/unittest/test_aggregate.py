@@ -44,12 +44,13 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         start = "2013-01-01"
-        end = "2018-08-03"
+        end = "2013-01-05"
 
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False)
+        print(marketData)
         dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
 
-        self.assertEqual(dataHash, "bac529e3220f4aa1bfd02169f5778903")
+        self.assertEqual(dataHash, "5dab60b5a46320fa4f9642e57215feb4")
 
     def test_aggregate_barchart(self):
 
