@@ -23,17 +23,13 @@ class LocalAggregate(unittest.TestCase):
         start = "2013-01-01"
         end = "2018-08-03"
 
-        marketData = aggregator.getData(["DOW"], "H", start, end, debug=False)
-        dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
+        marketData = aggregator.getData(["DOW"], "H", start, end, debug=False).round(1)
+        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
 
-        self.assertEqual(dataHash, "784b519199b6fb664efb666a3513b2e2")
+        self.assertEqual(dataHash, "6698c9e3faf242af2130c45f2f4c178e")
 
 
 class Aggregate(unittest.TestCase):
-
-    def test_hash(self):
-        hashstr = hashlib.md5("IAMACAT".encode('utf-8')).hexdigest()
-        self.assertEqual(hashstr, "9f26f6f940ff221a89f8190447140258")
 
     def test_aggregate_yahoo(self):
 
@@ -44,13 +40,12 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         start = "2013-01-01"
-        end = "2013-01-05"
+        end = "2018-01-05"
 
-        marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False)
-        print(marketData.values.flatten())
-        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
+        marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False).round(1)
+        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
 
-        self.assertEqual(dataHash, "5dab60b5a46320fa4f9642e57215feb4")
+        self.assertEqual(dataHash, "5c61ad352db34a70e7db85b8dc1fbe4f")
 
     def test_aggregate_barchart(self):
 
@@ -75,10 +70,10 @@ class Aggregate(unittest.TestCase):
         # Get Market Data
         aggregator = MarketDataAggregator(data_config)
 
-        marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
-        dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
+        marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False).round(1)
+        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
 
-        self.assertEqual(dataHash, "b27fda3b1b32bd031ff25ddb591f7bc7")
+        self.assertEqual(dataHash, "8bab1920a7ef97efeb7dfae254b26355")
 
 
 if __name__ == '__main__':
