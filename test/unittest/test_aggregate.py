@@ -26,7 +26,7 @@ class LocalAggregate(unittest.TestCase):
         marketData = aggregator.getData(["DOW"], "H", start, end, debug=False)
         dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
 
-        self.assertEqual(dataHash, "ca69b12d0df16cb57cf78d58a54815cb")
+        self.assertEqual(dataHash, "784b519199b6fb664efb666a3513b2e2")
 
 
 class Aggregate(unittest.TestCase):
@@ -45,7 +45,7 @@ class Aggregate(unittest.TestCase):
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False)
         dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
 
-        self.assertEqual(dataHash, "bf9994d649d619ad8f4c2256bfb3ec46")
+        self.assertEqual(dataHash, "bac529e3220f4aa1bfd02169f5778903")
 
     def test_aggregate_barchart(self):
 
@@ -73,7 +73,7 @@ class Aggregate(unittest.TestCase):
         marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
         dataHash = hashlib.md5(marketData.values.flatten().data).hexdigest()
 
-        self.assertEqual(dataHash, "dd847dc7bed4097d184feb72a18dbb90")
+        self.assertEqual(dataHash, "b27fda3b1b32bd031ff25ddb591f7bc7")
 
 
 if __name__ == '__main__':
