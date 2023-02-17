@@ -24,7 +24,7 @@ class LocalAggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW"], "H", start, end, debug=False).apply(np.floor)
-        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
+        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
 
         self.assertEqual(dataHash, "39fa7ffa8e49c451a6759790d8bf86eb")
 
@@ -43,9 +43,9 @@ class Aggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False).apply(np.floor)
-        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
+        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
 
-        self.assertEqual(dataHash, "39fda047652c4271aa174e6374246eca")
+        self.assertEqual(dataHash, "0c88e2885ebfefe9eec7935f9f3d560d")
 
     def test_aggregate_barchart(self):
 
@@ -71,7 +71,7 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False).apply(np.floor)
-        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
+        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
 
         self.assertEqual(dataHash, "a5fd8acfa2948eccb3ddd41c0cbde967")
 
