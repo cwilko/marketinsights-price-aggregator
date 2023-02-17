@@ -99,7 +99,17 @@ class BarChartConnector(Connector):
             if self.marketData is not None:
                 self.marketData = self.marketData.reset_index().set_index("Date_Time")
 
-    def getData(self, market, source, start, end, records, debug):
+    def getData(self, markets, start, end, records, debug):
+        marketData = pd.DataFrame(pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID'])))
+
+        for market in markets:
+            for source in market["sources"]:
+                data = self.getSourceData(market, source, start, end, records, debug)
+                if not data.empty:
+                    marketData = ppl.merge(data, marketData)
+        return marketData
+
+    def getSourceData(self, market, source, start, end, records, debug):
 
         resp = self.get_api_data(self.historicalUrl, self.construct_quotes_payload(source["ID"], count=records), debug)
 

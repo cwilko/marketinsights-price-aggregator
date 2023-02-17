@@ -1,0 +1,31 @@
+[
+    {
+        "ID": "yahoo",
+        "class": "YahooConnector",
+        "opts": {
+            "interval":"1d"
+        },
+        "timezone":"UTC",
+        "markets": [
+            {
+                "ID": "DOW",
+                "sources": [
+                    {
+                        "ID":"^DJI",
+                        "sample_unit":"D"
+                    }
+                ]
+            },
+            {
+                "ID": "IBM",
+                "sources": [
+                    {
+                        "ID":"IBM",
+                        "sample_unit":"D"
+                    }
+                ]
+            }
+        ]
+
+    }
+]

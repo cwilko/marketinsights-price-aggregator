@@ -6,7 +6,7 @@ class Connector:
     def setState(self, state):
         pass
 
-    def getData(self, market, source, start, end, records, debug):
+    def getData(self, markets, start, end, records, debug):
         pass
 
     def getOptions(self, chain, start, end, records, debug):

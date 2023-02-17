@@ -1,7 +1,7 @@
 
 import MIPriceAggregator.connectors as connectors
 import quantutils.dataset.pipeline as ppl
-import pandas
+import pandas as pd
 
 
 class MarketDataSource:
@@ -14,8 +14,8 @@ class MarketDataSource:
         connectorInstance = connectorClass(connName, tz, options)
         return connectorInstance
 
-    def getData(self, market, source, start="1979-01-01", end="2050-01-01", records=200, debug=False):
-        return self.dataConnector.getData(market, source, start, end, records, debug)
+    def getData(self, markets, start="1979-01-01", end="2050-01-01", records=200, debug=False):
+        return self.dataConnector.getData(markets, start, end, records, debug)
 
     def getOptionData(self, chain, start="1979-01-01", end="2050-01-01", records=200, debug=False):
         return self.dataConnector.getOptionData(chain, start, end, records, debug)
@@ -31,50 +31,49 @@ class MarketDataAggregator:
     def __init__(self, config):
         self.config = config
         for datasource in config:
-            self.datasources[datasource["ID"]] = MarketDataSource(datasource["class"], options=datasource["opts"])
+            self.datasources[datasource["ID"]] = MarketDataSource(connectorClass=datasource["class"], connName=datasource["ID"], options=datasource["opts"])
 
-    def getData(self, mkt, sample_unit, start="1979-01-01", end="2050-01-01", records=200, debug=False):
+    def getData(self, mkts, sample_unit, start="1979-01-01", end="2050-01-01", records=200, debug=False):
 
-        marketData = None
+        marketData = pd.DataFrame(pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID'])))
 
         for datasource in self.config:
 
             mds = self.datasources[datasource["ID"]]
 
-            for market in datasource["markets"]:
+            markets = [market for market in datasource["markets"] if market["ID"] in mkts]
 
-                # TODO: Remove this when multiple mkts supported
-                if market["ID"] == mkt:
+            data = mds.getData(markets, start, end, records, debug)
 
-                    for source in market["sources"]:
+            for market in markets:
 
-                        data = mds.getData(market, source, start, end, records, debug)
+                for source in market["sources"]:
 
-                        if not data.empty:
+                    tsData = data[data.index.get_level_values('ID') == source["ID"]]
 
-                            tsData = data[data.index.get_level_values('ID') == source["ID"]] \
-                                .reset_index() \
-                                .set_index("Date_Time")[["Open", "High", "Low", "Close"]]
+                    if not tsData.empty:
 
-                            # 28/6/21 Move this to before data is saved for performance reasons
-                            # Resample all to dataset sample unit (to introduce nans in all missing periods)
-                            tsData = ppl.resample(tsData, source["sample_unit"], debug)
+                        tsData = tsData \
+                            .reset_index() \
+                            .set_index("Date_Time")[["Open", "High", "Low", "Close"]]
 
-                            # Resample to the requested unit
-                            tsData = ppl.resample(tsData, sample_unit, debug)
+                        # 28/6/21 Move this to before data is saved for performance reasons
+                        # Resample all to dataset sample unit (to introduce nans in all missing periods)
+                        tsData = ppl.resample(tsData, source["sample_unit"], debug)
 
-                            # 06/06/18
-                            # Remove NaNs and resample again, to remove partial NaN entries before merging
-                            tsData = ppl.removeNaNs(tsData)
-                            tsData = ppl.resample(tsData, sample_unit, debug)
+                        # Resample to the requested unit
+                        tsData = ppl.resample(tsData, sample_unit, debug)
 
-                            if marketData is None:
-                                marketData = pandas.DataFrame()
+                        # 06/06/18
+                        # Remove NaNs and resample again, to remove partial NaN entries before merging
+                        tsData = ppl.removeNaNs(tsData)
+                        tsData = ppl.resample(tsData, sample_unit, debug)
 
-                            marketData = ppl.merge(tsData, marketData)
+                        tsData = tsData \
+                            .assign(ID=market["ID"]) \
+                            .reset_index() \
+                            .set_index(["Date_Time", "ID"])
 
-        if marketData is not None:
-            marketData["ID"] = mkt
-            marketData = marketData.reset_index().set_index(["Date_Time", "ID"])
+                        marketData = ppl.merge(tsData, marketData)
 
-        return marketData
+        return marketData.sort_index()

@@ -1,0 +1,20 @@
+[
+    {
+        "ID": "BarChart",
+        "class": "BarChartConnector",
+        "timezone": "UTC",
+        "opts": {},
+        "markets": [
+            {
+                "ID": "WTICrudeOil",
+                "sources": [
+                    {
+                        "ID": "CLZ23",
+                        "sample_unit": "D"
+                    }
+                ]
+            }
+        ]
+
+    }
+]

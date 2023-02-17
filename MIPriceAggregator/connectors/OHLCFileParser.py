@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 import os
 import quantutils.dataset.pipeline as ppl
 from MIPriceAggregator.connectors.Connector import Connector
@@ -14,11 +14,21 @@ class OHLCFileParser(Connector):
         DS_path = options["root"] + "/" + dsName + "/"
         self.SRC_path = DS_path + "raw/"
 
-    def getData(self, market, source, start, end, records, debug):
+    def getData(self, markets, start, end, records, debug):
+        marketData = pd.DataFrame(pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID'])))
+
+        for market in markets:
+            for source in market["sources"]:
+                data = self.getSourceData(market, source, start, end, records, debug)
+                if not data.empty:
+                    marketData = ppl.merge(data, marketData)
+        return marketData
+
+    def getSourceData(self, market, source, start, end, records, debug):
 
         options = self.options
 
-        existingData = pandas.DataFrame(index=pandas.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
+        existingData = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
 
         # Loop over any source files...
         for infile in os.listdir(self.SRC_path):
@@ -26,15 +36,15 @@ class OHLCFileParser(Connector):
             if infile.lower().startswith(source["ID"].lower()):
 
                 # Load RAW data (assume CSV)
-                newData = pandas.read_csv(self.SRC_path + infile,
-                                          index_col=options["index_col"],
-                                          parse_dates=options["parse_dates"],
-                                          header=None,
-                                          names=["Date", "Time", "Open", "High", "Low", "Close"],
-                                          usecols=range(0, 6),
-                                          skiprows=options["skiprows"],
-                                          dayfirst=options["dayfirst"]
-                                          )
+                newData = pd.read_csv(self.SRC_path + infile,
+                                      index_col=options["index_col"],
+                                      parse_dates=options["parse_dates"],
+                                      header=None,
+                                      names=["Date", "Time", "Open", "High", "Low", "Close"],
+                                      usecols=range(0, 6),
+                                      skiprows=options["skiprows"],
+                                      dayfirst=options["dayfirst"]
+                                      )
 
                 if newData is not None:
                     newData = ppl.cropDate(newData, start, end)

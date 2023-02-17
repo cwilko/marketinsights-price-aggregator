@@ -1,0 +1,27 @@
+[
+    {
+        "ID": "MDS",
+        "class": "MDSConnector",
+        "opts": {
+            "remote": true,
+            "location": "http://pricestore.192.168.1.203.nip.io"
+        },
+        "timezone": "UTC",
+        "markets": [
+            {
+                "ID": "DOW",
+                "sources": [
+                    {
+                        "ID": "WallSt-hourly",
+                        "sample_unit": "H"
+                    },
+                    {
+                        "ID": "D&J-IND",
+                        "sample_unit": "5min"
+                    }
+                ]
+            }
+        ]
+
+    }
+]

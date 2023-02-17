@@ -1,3 +1,4 @@
+import pandas as pd
 import yfinance as yf
 import quantutils.dataset.pipeline as ppl
 from MIPriceAggregator.connectors.Connector import Connector
@@ -10,20 +11,21 @@ class YahooConnector(Connector):
         self.options = options
         self.tz = tz
 
-    def getData(self, market, source, start, end, records, debug):
+    def getData(self, markets, start, end, records, debug):
 
-        # set stock ticker symbol
-        options = self.options
+        # Extract ticker info
+        tickers = []
+        [tickers.extend([source["ID"] for source in market["sources"]]) for market in markets]
 
-        # get daily stock prices over date range
-        #json_prices = YahooFinancials([stock_symbol])
-        #    .get_historical_price_data(options["start"], options["end"], options["interval"])
+        data = yf.download(tickers=tickers, start=start, end=end, interval=self.options["interval"], prepost=False)
 
-        data = yf.download(tickers=source["ID"], start=start, end=end, interval=options["interval"], prepost=False) \
-            .assign(ID=source["ID"]) \
-            .reset_index() \
-            .rename(columns={"Date": "Date_Time"}) \
-            .set_index(["Date_Time", "ID"]) \
+        # Workaround for yfinance not including ticker name when a single ticker
+        if len(tickers) == 1:
+            data.columns = pd.MultiIndex.from_tuples(list(zip(data.columns, tickers * len(data.columns))))
+
+        data = data \
+            .stack() \
+            .rename_axis(index=["Date_Time", "ID"]) \
             .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64"}) \
             [["Open", "High", "Low", "Close", "Volume"]]
 

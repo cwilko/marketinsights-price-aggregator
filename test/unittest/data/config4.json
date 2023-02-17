@@ -1,0 +1,75 @@
+[
+	{
+		"ID": "source1",
+		"class": "OHLCFileParser",
+		"opts": {
+			"source": "source1",
+			"root": "../data",
+			"date_format": "dd-MM-yy",
+			"time_format": "HH:mm:ss",
+			"index_col": 0,
+			"parse_dates": [[0,1]],
+			"dayfirst": true,
+			"skiprows": 1
+			
+		},
+		"timezone":"Europe/London",
+		"markets": [
+			{
+				"ID": "DOW",
+				"sources": [
+					{
+						"ID":"WallSt-hourly",
+						"sample_unit":"H"
+					}
+				]														
+			},
+			{
+				"ID": "SPY",
+				"sources": [
+					{
+						"ID":"SP500-hourly",
+						"sample_unit":"H"
+					}
+				]														
+			}
+		]
+
+	},
+	{
+		"ID": "source2",
+		"class": "OHLCFileParser",
+		"opts": {
+			"source": "source2",
+			"root": "../data",
+			"date_format": "dd-MM-yy",
+			"time_format": "HH:mm:ss",
+			"index_col": 0,
+			"parse_dates": [[0,1]],
+			"dayfirst": true,
+			"skiprows": 0
+		},
+		"timezone": "US/Eastern",
+		"markets": [
+			{
+				"ID": "DOW",
+				"sources": [
+					{
+						"ID":"D&J-IND",
+						"sample_unit":"5min"
+					}
+				]														
+			},
+			{
+				"ID": "SPY",
+				"sources": [
+					{
+						"ID":"SANDP-500",
+						"sample_unit":"5min"
+					}
+				]														
+			}
+		]
+	}
+]
+
