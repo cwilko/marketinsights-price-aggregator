@@ -2,6 +2,7 @@ import unittest
 import os
 import pandas as pd
 import numpy as np
+import hashlib
 import pytest
 import json
 from MIPriceAggregator.api.aggregator import MarketDataAggregator
@@ -23,9 +24,9 @@ class LocalAggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW"], "H", start, end, debug=False)
-        dataHash = pd.util.hash_pandas_object(marketData, hash_key='0123456789123456').astype(float).sum()
+        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
 
-        self.assertEqual(dataHash, 4.4964059088439654e+23)
+        self.assertEqual(dataHash, "ca69b12d0df16cb57cf78d58a54815cb")
 
 
 class Aggregate(unittest.TestCase):
@@ -42,9 +43,9 @@ class Aggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW", "IBM"], "D", start, end, debug=False)
-        dataHash = pd.util.hash_pandas_object(marketData, hash_key='0123456789123456').astype(float).sum()
+        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
 
-        self.assertEqual(dataHash, 3.792534780145306e+22)
+        self.assertEqual(dataHash, "bf9994d649d619ad8f4c2256bfb3ec46")
 
     def test_aggregate_barchart(self):
 
@@ -71,9 +72,9 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
-        dataHash = pd.util.hash_pandas_object(marketData, hash_key='0123456789123456').astype(float).sum()
+        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData, index=True).values).hexdigest()
 
-        self.assertEqual(dataHash, 1.158500396549419e+22)
+        self.assertEqual(dataHash, "dd847dc7bed4097d184feb72a18dbb90")
 
 
 if __name__ == '__main__':
