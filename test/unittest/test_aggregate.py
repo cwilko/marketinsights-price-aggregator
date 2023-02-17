@@ -46,8 +46,8 @@ class Aggregate(unittest.TestCase):
         dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
         self.assertEqual(dataHash, "0c88e2885ebfefe9eec7935f9f3d560d")
 
-        #marketData.to_pickle(dir + "/data/yahoo.pkl")
-        #compare = pd.read_pickle(dir + "/data/yahoo.pkl")
+        # marketData.to_pickle(dir + "/data/yahoo.pkl")
+        # compare = pd.read_pickle(dir + "/data/yahoo.pkl")
 
         # print(marketData["2016-10-31":])
 
@@ -76,15 +76,15 @@ class Aggregate(unittest.TestCase):
         # Get Market Data
         aggregator = MarketDataAggregator(data_config)
 
-        marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
-        #marketData.to_pickle(dir + "/data/ohlc.pkl")
+        marketData = aggregator.getData(["DOW", "SPY"], "D", start="2016-10-31", end="2016-11-06", debug=False)
+        # marketData.to_pickle(dir + "/data/ohlc.pkl")
         compare = pd.read_pickle(dir + "/data/ohlc.pkl")
 
-        print(print(pd.concat([marketData, compare]).drop_duplicates(keep=False)))
-        print(compare["2016-10-31":])
-        print(marketData["2016-10-31":])
+        print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
+        print(compare["2016-10-31":].values)
+        print(marketData["2016-10-31":].values)
 
-        self.assertTrue(False)
+        self.assertTrue(pd.concat([marketData, compare]).drop_duplicates(keep=False).empty)
 
 if __name__ == '__main__':
     unittest.main()
