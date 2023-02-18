@@ -18,5 +18,5 @@ if __name__ == '__main__':
 
     # Local Options
     mds = MIDataStoreRemote(location="http://pricestore.192.168.1.203.nip.io")
-    priceStore.saveHistoricalOptionData(mds, ds_config, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, refreshUnderyling=True, debug=True)
+    priceStore.saveHistoricalOptionData(mds, ds_config, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, refreshUnderyling=True, debug=False)
     print("Updates complete at " + str(datetime.utcnow()))

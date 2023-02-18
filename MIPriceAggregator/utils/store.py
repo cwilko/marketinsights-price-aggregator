@@ -1,21 +1,19 @@
-import json
 import quantutils.dataset.pipeline as ppl
-from MIPriceAggregator.api.aggregator import MarketDataSource
+from MIPriceAggregator.api.aggregator import MarketDataSource, MarketDataAggregator
 import pandas as pd
 import numpy as np
-import time
-from datetime import datetime, date, timedelta
+from datetime import datetime
 
 
-def saveHistoricalOptionData(mds, ds_file, start="1979-01-01", end="2050-01-01", records=200, refreshUnderyling=False, dry_run=False, debug=False):
-
-    datasources = json.load(open(ds_file))
+def saveHistoricalOptionData(mds, datasources, start="1979-01-01", end="2050-01-01", records=200, refreshUnderyling=False, dry_run=False, debug=False):
 
     data = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
 
     # First ensure that all underlying date is updated
     if refreshUnderyling:
-        saveHistoricalData(mds, ds_file, start=start, end=end, records=records, debug=debug)
+        aggregator = MarketDataAggregator(datasources)
+        underlyingData = aggregator.getData(start=start, end=end, records=records, aggregate=False, debug=debug)
+        saveData(mds, underlyingData)
 
     for datasource in datasources:
 
@@ -47,46 +45,40 @@ def saveHistoricalOptionData(mds, ds_file, start="1979-01-01", end="2050-01-01",
     return data
 
 
-def saveHistoricalData(mds, ds_file, start="1979-01-01", end="2050-01-01", records=200, delta=False, newOnly=False, dry_run=False, debug=False):
+from datetime import datetime
 
-    datasources = json.load(open(ds_file))
 
-    for datasource in datasources:
+def saveData(mds, data, delta=False, dry_run=False, debug=False):
 
-        ds = MarketDataSource(datasource["class"], datasource["ID"], datasource["timezone"], datasource["opts"])
+    resultData = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
 
-        for market in datasource["markets"]:
+    for mID in data.index.get_level_values("mID").unique().values:
 
-            data = pd.DataFrame(index=pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'Date_Time', u'ID']))
+        for sID in data.xs(mID).index.get_level_values("sID").unique().values:
 
-            for source in market["sources"]:
+            # TODO Implement newOnly
+            start = 0
+            if delta:
+                try:
+                    oldData = mds.aggregate(mID, [sID])
+                    start = oldData.index.get_level_values("Date_Time")[-1].strftime('%Y-%m-%d')
+                    # print(start)
+                except Exception as e:
+                    print(e)
+                    print("Could not find " + sID + " within table " + mID)
 
-                # TODO Implement newOnly
+            newData = data.xs([mID, sID]).assign(ID=sID)[start:].set_index(["ID"], append=True)
 
-                if delta:
-                    try:
-                        start = mds.aggregate(market["ID"], [source["ID"]]).index.get_level_values("Date_Time")[-1]
-                        print(start)
-                        records = (datetime.utcnow() - start.to_pydatetime().replace(tzinfo=None)).days + 1
-                        print(records)
-                        start = start.strftime('%Y-%m-%d')
-                    except Exception as e:
-                        print(e)
-                        print("Could not find " + market["ID"])
-                        start = "1979-01-01"
+            if newData is not None:
 
-                newData = ds.getSourceData(market, source, start, end, records)
+                print("Adding " + sID + " to " + mID + " table")
 
-                if newData is not None:
+                if debug:
+                    print(newData)
 
-                    print("Adding " + source["ID"] + " to " + market["ID"] + " table")
+                if not dry_run:
+                    mds.append(mID, newData, update=True)
 
-                    if debug:
-                        print(newData)
+                resultData = ppl.merge(newData, resultData)
 
-                    data = ppl.merge(data, newData)
-
-            if not dry_run:
-                mds.append(market["ID"], data, update=True)
-
-    return data
+    return resultData
