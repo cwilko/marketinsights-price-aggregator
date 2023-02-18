@@ -77,12 +77,8 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
-        #marketData.to_pickle(dir + "/data/ohlc.pkl")
-        compare = pd.read_pickle(dir + "/data/ohlc.pkl")
 
-        print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
-
-        self.assertTrue(pd.concat([marketData, compare]).drop_duplicates(keep=False).empty)
-
+        dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
+        self.assertEqual(dataHash, "b27fda3b1b32bd031ff25ddb591f7bc7")
 if __name__ == '__main__':
     unittest.main()
