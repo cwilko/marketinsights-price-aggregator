@@ -17,6 +17,9 @@ class MarketDataSource:
     def getData(self, markets, start="1979-01-01", end="2050-01-01", records=200, debug=False):
         return self.dataConnector.getData(markets, start, end, records, debug)
 
+    def getSourceData(self, market, source, start="1979-01-01", end="2050-01-01", records=200, debug=False):
+        return self.dataConnector.getSourceData(market, source, start, end, records, debug)
+
     def getOptionData(self, chain, start="1979-01-01", end="2050-01-01", records=200, debug=False):
         return self.dataConnector.getOptionData(chain, start, end, records, debug)
 

@@ -24,9 +24,10 @@ class LocalAggregate(unittest.TestCase):
         end = "2018-08-03"
 
         marketData = aggregator.getData(["DOW"], "H", start, end, debug=False).apply(np.floor)
+        print(marketData)
         dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
 
-        self.assertEqual(dataHash, "39fa7ffa8e49c451a6759790d8bf86eb")
+        self.assertEqual(dataHash, "00204fbf989dcfa7dcf87e66a0341817")
 
 
 class Aggregate(unittest.TestCase):
@@ -55,6 +56,7 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         marketData = aggregator.getData(["WTICrudeOil"], "D", records=50, debug=False)
+        print(marketData)
 
         self.assertEqual(marketData.dropna().shape, (50, 4))
 

@@ -9,6 +9,9 @@ class Connector:
     def getData(self, markets, start, end, records, debug):
         pass
 
+    def getSourceData(self, market, source, start, end, records, debug):
+        pass
+
     def getOptions(self, chain, start, end, records, debug):
         pass
 

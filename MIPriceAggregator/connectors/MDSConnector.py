@@ -27,11 +27,14 @@ class MDSConnector(Connector):
 
         for market in markets:
             for source in market["sources"]:
-                data = self.mds.aggregate(market["ID"], [source["ID"]], start, end)
+                data = self.getSourceData(market, source, start, end, records, debug)
                 if not data.empty:
                     marketData = ppl.merge(data, marketData)
 
         return marketData
+
+    def getSourceData(self, market, source, start, end, records, debug):
+        return self.mds.aggregate(market["ID"], [source["ID"]], start, end)
 
     def getOptionData(self, chain, start, end, records, debug):
 

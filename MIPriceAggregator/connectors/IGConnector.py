@@ -18,7 +18,7 @@ class IGConnector(Connector):
         self.ig_service = IGService(options["IG_user"], options["IG_pw"], options["IG_apikey"], "DEMO", options["IG_account_no"], retryer=retryer)
         self.ig_service.create_session(version='3')
 
-    def getData(self, market, source, start, end, records, debug):
+    def getSourceData(self, market, source, start, end, records, debug):
 
         options = self.options
 

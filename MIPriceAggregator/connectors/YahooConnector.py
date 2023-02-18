@@ -11,12 +11,18 @@ class YahooConnector(Connector):
         self.options = options
         self.tz = tz
 
-    def getData(self, markets, start, end, records, debug):
+    def getSourceData(self, market, source, start, end, records, debug):
+        # Extract ticker info
+        tickers = [source["ID"]]
+        return self.getYahooData(tickers, start, end, debug)
 
+    def getData(self, markets, start, end, records, debug):
         # Extract ticker info
         tickers = []
         [tickers.extend([source["ID"] for source in market["sources"]]) for market in markets]
+        return self.getYahooData(tickers, start, end, debug)
 
+    def getYahooData(self, tickers, start, end, debug):
         data = yf.download(tickers=tickers, start=start, end=end, interval=self.options["interval"], prepost=False)
 
         # Workaround for yfinance not including ticker name when a single ticker
