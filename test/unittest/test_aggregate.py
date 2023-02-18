@@ -80,10 +80,6 @@ class Aggregate(unittest.TestCase):
         # marketData.to_pickle(dir + "/data/ohlc.pkl")
         compare = pd.read_pickle(dir + "/data/ohlc.pkl")
 
-        print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
-        print(compare["2016-10-31":].dtypes)
-        print(marketData["2016-10-31":].dtypes)
-
         self.assertTrue(False)
 
 if __name__ == '__main__':
