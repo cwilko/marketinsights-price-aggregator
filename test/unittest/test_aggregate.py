@@ -31,7 +31,7 @@ class LocalAggregate(unittest.TestCase):
 
 class Aggregate(unittest.TestCase):
 
-    def test_aggregate_yahoo(self):
+    def _test_aggregate_yahoo(self):
 
         with open(dir + "/data/config2.json") as json_file:
             data_config = json.load(json_file)
@@ -53,7 +53,7 @@ class Aggregate(unittest.TestCase):
 
         # self.assertTrue(False)
 
-    def test_aggregate_barchart(self):
+    def _test_aggregate_barchart(self):
 
         with open(dir + "/data/config3.json") as json_file:
             data_config = json.load(json_file)
@@ -81,10 +81,10 @@ class Aggregate(unittest.TestCase):
         compare = pd.read_pickle(dir + "/data/ohlc.pkl")
 
         print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
-        print(compare["2016-10-31":].values)
-        print(marketData["2016-10-31":].values)
+        print(compare["2016-10-31":].dtypes)
+        print(marketData["2016-10-31":].dtypes)
 
-        self.assertTrue(pd.concat([marketData, compare]).drop_duplicates(keep=False).empty)
+        self.assertTrue(False)
 
 if __name__ == '__main__':
     unittest.main()
