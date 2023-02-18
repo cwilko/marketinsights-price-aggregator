@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime, date, timedelta
 from quantutils.api.datasource import MIDataStoreRemote
 import MIPriceAggregator.utils.store as priceStore
@@ -12,8 +13,10 @@ if __name__ == '__main__':
     MI_PRICE_STORE_URL = os.environ.get('MI_PRICE_STORE_URL')
 
     ds_location = "../datasources/datasources.json"
+    with open(ds_location) as json_file:
+        ds_config = json.load(json_file)
 
     # Local Options
     mds = MIDataStoreRemote(location="http://pricestore.192.168.1.203.nip.io")
-    priceStore.saveHistoricalOptionData(mds, ds_location, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, refreshUnderyling=True, debug=True)
+    priceStore.saveHistoricalOptionData(mds, ds_config, start=str(date.today()), end=str(date.today() + timedelta(days=1)), records=1, refreshUnderyling=True, debug=True)
     print("Updates complete at " + str(datetime.utcnow()))
