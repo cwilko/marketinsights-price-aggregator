@@ -77,8 +77,10 @@ class Aggregate(unittest.TestCase):
         aggregator = MarketDataAggregator(data_config)
 
         marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
-        # marketData.to_pickle(dir + "/data/ohlc.pkl")
+        #marketData.to_pickle(dir + "/data/ohlc.pkl")
         compare = pd.read_pickle(dir + "/data/ohlc.pkl")
+
+        print(pd.concat([marketData, compare]).drop_duplicates(keep=False))
 
         self.assertTrue(pd.concat([marketData, compare]).drop_duplicates(keep=False).empty)
 
