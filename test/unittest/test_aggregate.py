@@ -46,7 +46,7 @@ class Aggregate(unittest.TestCase):
         dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
         self.assertEqual(dataHash, "0c88e2885ebfefe9eec7935f9f3d560d")
 
-    def _test_aggregate_barchart(self):
+    def test_aggregate_barchart(self):
 
         with open(dir + "/data/config3.json") as json_file:
             data_config = json.load(json_file)
@@ -58,7 +58,7 @@ class Aggregate(unittest.TestCase):
 
         self.assertEqual(marketData.dropna().shape, (50, 4))
 
-    def _test_aggregate_OHLC(self):
+    def test_aggregate_OHLC(self):
 
         with open(dir + "/data/config4.json") as json_file:
             data_config = json.load(json_file)
