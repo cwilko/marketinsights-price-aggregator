@@ -4,3 +4,5 @@ from MIPriceAggregator.connectors.YahooConnector import YahooConnector
 from MIPriceAggregator.connectors.IGConnector import IGConnector
 from MIPriceAggregator.connectors.BarChartConnector import BarChartConnector
 from MIPriceAggregator.connectors.MDSConnector import MDSConnector
+from MIPriceAggregator.connectors.PickleConnector import PickleConnector
+from MIPriceAggregator.connectors.MemoryConnector import MemoryConnector

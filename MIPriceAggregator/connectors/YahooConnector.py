@@ -30,10 +30,16 @@ class YahooConnector(Connector):
             data.columns = pd.MultiIndex.from_tuples(list(zip(data.columns, tickers * len(data.columns))))
 
         data = data \
+            .reset_index() \
+            .assign(Date_Time=lambda x: pd.to_datetime(x['Date'])) \
+            .set_index("Date_Time") \
             .stack() \
             .rename_axis(index=["Date_Time", "ID"]) \
             .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64"}) \
             [["Open", "High", "Low", "Close", "Volume"]]
+
+        if debug:
+            print(data)
 
         if not hasattr(data.index.get_level_values("Date_Time"), "tz") or data.index.get_level_values("Date_Time").tz is None:
             data = ppl.localize(data, self.tz, self.tz)

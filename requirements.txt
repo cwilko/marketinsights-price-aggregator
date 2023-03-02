@@ -6,3 +6,4 @@ trading-ig==0.0.15
 tenacity==8.0.1
 urllib3>=1.24
 munch==2.5.0
+tqdm==4.26.0

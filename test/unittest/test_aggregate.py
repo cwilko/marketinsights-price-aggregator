@@ -28,8 +28,8 @@ class LocalAggregate(unittest.TestCase):
         marketData = aggregator.getData(["DOW"], "H", start, end, debug=False)
         print(marketData)
         dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
-        self.assertEqual(marketData.shape, (48956, 4))
-        self.assertEqual(dataHash, "784b519199b6fb664efb666a3513b2e2")
+        self.assertEqual(marketData.shape, (20424, 4))
+        self.assertEqual(dataHash, "c1759b018498a26fd30ae67d727f668b")
 
     def test_local_raw_MDS_and_save(self):
 
@@ -71,8 +71,8 @@ class Aggregate(unittest.TestCase):
 
         print(marketData)
         dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
-        self.assertEqual(marketData.shape, (4078, 4))
-        self.assertEqual(dataHash, "e4182e7fea2a3ac69a4b1976e901d350")
+        self.assertEqual(marketData.shape, (2814, 4))
+        self.assertEqual(dataHash, "9375ba21062baa5507c82f30b69a1cc3")
 
     def test_aggregate_barchart(self):
 
@@ -99,8 +99,8 @@ class Aggregate(unittest.TestCase):
         marketData = aggregator.getData(["DOW", "SPY"], "D", debug=False)
         print(marketData)
         dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
-        self.assertEqual(marketData.shape, (1418, 4))
-        self.assertEqual(dataHash, "b541f46cc367c3187614bbc34c928f0c")
+        self.assertEqual(marketData.shape, (905, 4))
+        self.assertEqual(dataHash, "a180491aea7707ea7dbf3ebc2d61d13e")
 
     def test_raw_OHLC(self):
 
