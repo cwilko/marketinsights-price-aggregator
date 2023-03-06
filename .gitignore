@@ -13,3 +13,4 @@ datastore/
 build/
 tmp
 IG.ipynb
+*.pkl

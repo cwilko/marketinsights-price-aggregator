@@ -2,7 +2,7 @@ import os
 import json
 from datetime import datetime, date, timedelta
 from quantutils.api.datasource import MIDataStoreRemote
-import MIPriceAggregator.utils.store as priceStore
+import marketinsights.utils.store as priceStore
 
 # run
 if __name__ == '__main__':

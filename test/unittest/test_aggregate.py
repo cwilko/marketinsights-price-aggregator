@@ -4,8 +4,8 @@ import numpy as np
 import hashlib
 import pytest
 import json
-from MIPriceAggregator.api.aggregator import MarketDataAggregator
-import MIPriceAggregator.utils.store as priceStore
+from marketinsights.api.aggregator import MarketDataAggregator
+import marketinsights.utils.store as priceStore
 from quantutils.api.datasource import MIDataStoreRemote
 
 dir = os.path.dirname(os.path.abspath(__file__))
