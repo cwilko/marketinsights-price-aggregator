@@ -1,4 +1,4 @@
-FROM arm64v8/python:3.9-slim-bullseye 
+FROM arm64v8/python:3.8-slim-bullseye 
 
 ENV PYTHONUNBUFFERED=1
 
@@ -12,6 +12,6 @@ COPY . /usr/app
 WORKDIR /usr/app
 
 RUN pip install wheel
-RUN pip install -r requirements.txt
+RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
 
 CMD ["python", "-u", "./jobs/app.py"]
