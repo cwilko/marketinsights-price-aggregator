@@ -1,7 +1,2 @@
-numpy==1.19.5
-pandas==1.1.5
-quantutils[options] @ git+https://github.com/cwilko/quantutils.git#egg=quantutils
 marketinsights-price-aggregator @ git+https://github.com/cwilko/marketinsights-price-aggregator.git
-#scipy==1.7.3 - no longer needed on arm64
-#numba==0.56.3 - no longer needed on arm64
-py-vollib-vectorized==0.1.1
+#py-vollib-vectorized==0.1.1

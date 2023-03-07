@@ -12,6 +12,6 @@ COPY . /usr/app
 WORKDIR /usr/app
 
 RUN pip install wheel
-RUN pip install --extra-index-url https://www.piwheels.org/simple -r requirements.txt
+RUN pip install -U -r requirements.txt
 
 CMD ["python", "-u", "./jobs/app.py"]
