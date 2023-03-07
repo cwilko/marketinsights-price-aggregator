@@ -34,7 +34,7 @@ class MDSConnector(Connector):
         return marketData
 
     def getSourceData(self, market, source, start, end, records, debug):
-        data = self.mds.aggregate(market["ID"], [source["ID"]], start, end)
+        return self.mds.aggregate(market["ID"], [source["ID"]], start, end)
 
     def getOptionData(self, chain, start, end, records, debug):
 
