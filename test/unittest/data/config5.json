@@ -1,10 +1,9 @@
 [
     {
-        "ID": "MDS",
-        "class": "MDSConnector",
+        "ID": "Pickle",
+        "class": "PickleConnector",
         "opts": {
-            "remote": true,
-            "location": "http://localhost:8080"
+            "path": "test.pkl"
         },
         "timezone": "UTC",
         "markets": [
@@ -18,6 +17,19 @@
                     {
                         "ID": "D&J-IND",
                         "sample_unit": "5min"
+                    }
+                ]
+            },
+            {
+                "ID": "SPY",
+                "sources": [
+                    {
+                        "ID":"SP500-hourly",
+                        "sample_unit":"H"
+                    },
+                    {
+                        "ID":"SANDP-500",
+                        "sample_unit":"5min"
                     }
                 ]
             }

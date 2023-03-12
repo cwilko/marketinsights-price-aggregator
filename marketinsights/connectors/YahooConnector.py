@@ -29,6 +29,14 @@ class YahooConnector(Connector):
         if len(tickers) == 1:
             data.columns = pd.MultiIndex.from_tuples(list(zip(data.columns, tickers * len(data.columns))))
 
+        # Adjust end date to be "inclusive" - to match pandas indexing
+        if end.strip().find(" ") < 0:
+            end = str(pd.Timestamp(end) + pd.Timedelta("1D"))
+        elif end.strip().find(":") < 0:
+            end = str(pd.Timestamp(end) + pd.Timedelta("1H"))
+        else:
+            end = str(pd.Timestamp(end) + pd.Timedelta("1M"))
+
         data = data \
             .reset_index() \
             .assign(Date_Time=lambda x: pd.to_datetime(x['Date'])) \

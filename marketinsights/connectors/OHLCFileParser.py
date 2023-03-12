@@ -43,11 +43,11 @@ class OHLCFileParser(Connector):
                                       names=["Date", "Time", "Open", "High", "Low", "Close"],
                                       usecols=range(0, 6),
                                       skiprows=options["skiprows"],
-                                      dayfirst=options["dayfirst"]
+                                      dayfirst=options["dayfirst"],
+                                      float_precision="legacy"
                                       )
 
                 if newData is not None:
-                    newData = ppl.cropDate(newData, start, end)
 
                     if not newData.empty:
 
@@ -59,6 +59,7 @@ class OHLCFileParser(Connector):
                             [["Open", "High", "Low", "Close"]]
 
                         newData = ppl.localize(newData, self.tz, "UTC")
+                        newData = newData.loc[pd.IndexSlice[start:end, :], :]
 
                         existingData = ppl.merge(newData, existingData)
 
