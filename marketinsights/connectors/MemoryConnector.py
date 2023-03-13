@@ -27,7 +27,8 @@ class MemoryConnector(Connector):
         # Extract ticker info
         tickers = []
         [tickers.extend([source["ID"] for source in market["sources"]]) for market in markets]
-        return self.data[self.data.index.get_level_values(level="ID").isin(tickers)]
+        data = self.data[self.data.index.get_level_values(level="ID").isin(tickers)]
+        return data.loc[pd.IndexSlice[:, start:end], :]
 
     def getOptionData(self, chain, start, end, records, debug):
 

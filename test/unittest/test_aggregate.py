@@ -188,6 +188,44 @@ class TestAggregate:
         assert marketData.shape == (64908, 4)
         assert dataHash == "4ba7f99dc62027e26edfc59a7972ce59"
 
+    def test_aggregate_MEM(self, OHLCData):
+
+        with open(dir + "/data/config6.json") as json_file:
+            data_config = json.load(json_file)
+
+        data_config[0]["opts"]["data"] = OHLCData.droplevel("mID").rename_axis(index={'sID': 'ID'}).sort_index()
+
+        start = "2016-10-05"
+        end = "2016-10-25"
+
+        # Get Market Data
+        aggregator = MarketDataAggregator(data_config)
+
+        marketData = aggregator.getData("DOW", "D", start, end, debug=False)
+
+        print(marketData)
+        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData).values.flatten()).hexdigest()
+        assert marketData.shape == (18, 4)
+        assert dataHash == sharedDigest
+
+    def test_raw_MEM(self, OHLCData):
+
+        with open(dir + "/data/config6.json") as json_file:
+            data_config = json.load(json_file)
+
+        data_config[0]["opts"]["data"] = OHLCData.droplevel("mID").rename_axis(index={'sID': 'ID'}).sort_index()
+
+        # Get Market Data
+        aggregator = MarketDataAggregator(data_config)
+
+        marketData = aggregator.getData(aggregate=False)
+        print(marketData)
+
+        dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData).values.flatten()).hexdigest()
+
+        assert marketData.shape == (64908, 4)
+        assert dataHash == "4ba7f99dc62027e26edfc59a7972ce59"
+
 
 if __name__ == '__main__':
     unittest.main()
