@@ -44,7 +44,7 @@ class OHLCFileParser(Connector):
                                       usecols=range(0, 6),
                                       skiprows=options["skiprows"],
                                       dayfirst=options["dayfirst"],
-                                      float_precision="legacy"
+                                      float_precision="high"
                                       )
 
                 if newData is not None:

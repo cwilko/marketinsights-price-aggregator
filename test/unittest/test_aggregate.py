@@ -10,7 +10,12 @@ import marketinsights.utils.store as priceStore
 from quantutils.api.datasource import MIDataStoreRemote
 
 dir = os.path.dirname(os.path.abspath(__file__))
-sharedDigest = "024ac9ff95bb1dc73854ea3f257cbc1c"
+# 9b90de1971f03ce236c714153a9dd75e with precision="legacy"
+sharedDigest = "a42b8d7f7feca51b5f86bdbb3c3ba0f6"
+# 8525c634bf8e7f1d80b0213b319802df with precision="legacy"
+sharedRawDigest = "7ce4bbd79446ab1a96cadc1b70e159a2"
+start = "2016-04-15"
+end = "2016-04-25"
 
 
 class TestAggregate:
@@ -63,7 +68,7 @@ class TestAggregate:
         assert hashlib.md5(marketData.values.flatten()).hexdigest() == "8809f5ad69f8c2c86727ca4c67e0d3fe"
 
         # Now try to save the raw data
-        mds = MIDataStoreRemote(location="http://localhost:8080")
+        mds = MIDataStoreRemote(location="http://pricestore.192.168.1.203.nip.io")
         savedData = priceStore.saveData(mds=mds, data=marketData, dry_run=True, delta=True)
         print(savedData)
         assert savedData.shape == (83, 4)
@@ -74,9 +79,6 @@ class TestAggregate:
         with open(dir + "/data/config1.json") as json_file:
             data_config = json.load(json_file)
 
-        start = "2016-10-05"
-        end = "2016-10-25"
-
         # Get data from MDS
         MDS_aggregator = MarketDataAggregator(data_config)
 
@@ -84,7 +86,7 @@ class TestAggregate:
 
         dataHash = hashlib.md5(pd.util.hash_pandas_object(MDSData).values.flatten()).hexdigest()
         print(MDSData)
-        assert MDSData.shape == (18, 4)
+        assert MDSData.shape == (8, 4)
         # Note this must match the OHLC test hexdigest
         assert dataHash == sharedDigest
 
@@ -125,9 +127,6 @@ class TestAggregate:
         for i in range(len(data_config)):
             data_config[i]["opts"]["root"] = dir + "/data"
 
-        start = "2016-10-05"
-        end = "2016-10-25"
-
         # Get Market Data
         aggregator = MarketDataAggregator(data_config)
 
@@ -135,7 +134,7 @@ class TestAggregate:
 
         print(marketData)
         dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData).values.flatten()).hexdigest()
-        assert marketData.shape == (18, 4)
+        assert marketData.shape == (8, 4)
         assert dataHash == sharedDigest
 
     def test_raw_OHLC(self, OHLCData):
@@ -145,8 +144,8 @@ class TestAggregate:
 
         dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData).values.flatten()).hexdigest()
 
-        assert marketData.shape == (64908, 4)
-        assert dataHash == "4ba7f99dc62027e26edfc59a7972ce59"
+        assert marketData.shape == (83303, 4)
+        assert dataHash == sharedRawDigest
 
     def test_aggregate_PKL(self, OHLCData):
 
@@ -156,9 +155,6 @@ class TestAggregate:
             data_config = json.load(json_file)
         data_config[0]["opts"]["path"] = dir + "/data/test2.pkl"
 
-        start = "2016-10-05"
-        end = "2016-10-25"
-
         # Get Market Data
         aggregator = MarketDataAggregator(data_config)
 
@@ -166,7 +162,7 @@ class TestAggregate:
 
         print(marketData)
         dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData).values.flatten()).hexdigest()
-        assert marketData.shape == (18, 4)
+        assert marketData.shape == (8, 4)
         assert dataHash == sharedDigest
 
     def test_raw_PKL(self, OHLCData):
@@ -185,8 +181,8 @@ class TestAggregate:
 
         dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData).values.flatten()).hexdigest()
 
-        assert marketData.shape == (64908, 4)
-        assert dataHash == "4ba7f99dc62027e26edfc59a7972ce59"
+        assert marketData.shape == (83303, 4)
+        assert dataHash == sharedRawDigest
 
     def test_aggregate_MEM(self, OHLCData):
 
@@ -195,9 +191,6 @@ class TestAggregate:
 
         data_config[0]["opts"]["data"] = OHLCData.droplevel("mID").rename_axis(index={'sID': 'ID'}).sort_index()
 
-        start = "2016-10-05"
-        end = "2016-10-25"
-
         # Get Market Data
         aggregator = MarketDataAggregator(data_config)
 
@@ -205,7 +198,7 @@ class TestAggregate:
 
         print(marketData)
         dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData).values.flatten()).hexdigest()
-        assert marketData.shape == (18, 4)
+        assert marketData.shape == (8, 4)
         assert dataHash == sharedDigest
 
     def test_raw_MEM(self, OHLCData):
@@ -223,8 +216,8 @@ class TestAggregate:
 
         dataHash = hashlib.md5(pd.util.hash_pandas_object(marketData).values.flatten()).hexdigest()
 
-        assert marketData.shape == (64908, 4)
-        assert dataHash == "4ba7f99dc62027e26edfc59a7972ce59"
+        assert marketData.shape == (83303, 4)
+        assert dataHash == sharedRawDigest
 
 
 if __name__ == '__main__':
