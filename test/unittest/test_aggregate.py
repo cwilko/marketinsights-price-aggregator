@@ -68,7 +68,7 @@ class TestAggregate:
         assert hashlib.md5(marketData.values.flatten()).hexdigest() == "8809f5ad69f8c2c86727ca4c67e0d3fe"
 
         # Now try to save the raw data
-        mds = MIDataStoreRemote(location="http://pricestore.192.168.1.203.nip.io")
+        mds = MIDataStoreRemote(location="http://localhost:8080")
         savedData = priceStore.saveData(mds=mds, data=marketData, dry_run=True, delta=True)
         print(savedData)
         assert savedData.shape == (83, 4)

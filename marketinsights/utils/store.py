@@ -67,7 +67,7 @@ def saveData(mds, data, delta=False, dry_run=False, debug=False):
                     print(e)
                     print("Could not find " + sID + " within table " + mID)
 
-            newData = data.xs([mID, sID]).assign(ID=sID)[start:].set_index(["ID"], append=True)
+            newData = data.xs((mID, sID)).assign(ID=sID)[start:].set_index(["ID"], append=True)
 
             if newData is not None:
 

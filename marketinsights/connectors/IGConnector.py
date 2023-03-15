@@ -4,6 +4,7 @@ from trading_ig.rest import IGService, ApiExceededException
 from tenacity import Retrying, wait_exponential, retry_if_exception_type
 import quantutils.dataset.pipeline as ppl
 import pandas as pd
+import numpy as np
 from dateutil import parser
 
 
@@ -31,7 +32,7 @@ class IGConnector(Connector):
             .reset_index() \
             .rename(columns={"DateTime": "Date_Time"}) \
             .set_index(["Date_Time", "ID"]) \
-            .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64"}) \
+            .astype(dtype={"Open": np.float64, "High": np.float64, "Low": np.float64, "Close": np.float64}) \
             [["Open", "High", "Low", "Close"]]
 
         if (data.index.get_level_values("Date_Time").tz is None):

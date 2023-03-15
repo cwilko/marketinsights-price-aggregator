@@ -4,7 +4,7 @@
         "class": "MDSConnector",
         "opts": {
             "remote": true,
-            "location": "http://pricestore.192.168.1.203.nip.io"
+            "location": "http://localhost:8080"
         },
         "timezone": "UTC",
         "markets": [

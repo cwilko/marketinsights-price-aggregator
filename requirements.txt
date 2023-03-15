@@ -1,6 +1,6 @@
 quantutils[options] @ git+https://github.com/cwilko/quantutils.git#egg=quantutils
-numpy<=1.19.5
-pandas<1.2.0
+numpy>=1.19,<=1.23.5
+pandas>=1.1,<=1.5.3
 yfinance<=0.1.72
 trading-ig>=0.0.20
 tenacity>=8.2.2

@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 import quantutils.dataset.pipeline as ppl
 from marketinsights.connectors.Connector import Connector
@@ -55,7 +56,7 @@ class OHLCFileParser(Connector):
                             .assign(ID=source["ID"]) \
                             .reset_index() \
                             .set_index(["Date_Time", "ID"]) \
-                            .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64"}) \
+                            .astype(dtype={"Open": np.float64, "High": np.float64, "Low": np.float64, "Close": np.float64}) \
                             [["Open", "High", "Low", "Close"]]
 
                         newData = ppl.localize(newData, self.tz, "UTC")

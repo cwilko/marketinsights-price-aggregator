@@ -1,4 +1,4 @@
-FROM arm64v8/python:3.8-slim-bullseye 
+FROM arm64v8/python:3.9-slim-bullseye 
 
 ENV PYTHONUNBUFFERED=1
 

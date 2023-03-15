@@ -26,5 +26,5 @@ jobs:
 
       - name: Test with pytest
         run: |
-          pytest -k test_aggregate_ --disable-warnings
-          pytest -k test_raw --disable-warnings
+          pytest -k test_aggregate_ 
+          pytest -k test_raw 

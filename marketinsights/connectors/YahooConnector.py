@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import yfinance as yf
 import quantutils.dataset.pipeline as ppl
 from marketinsights.connectors.Connector import Connector
@@ -43,7 +44,7 @@ class YahooConnector(Connector):
             .set_index("Date_Time") \
             .stack() \
             .rename_axis(index=["Date_Time", "ID"]) \
-            .astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64"}) \
+            .astype(dtype={"Open": np.float64, "High": np.float64, "Low": np.float64, "Close": np.float64, "Volume": np.float64}) \
             [["Open", "High", "Low", "Close", "Volume"]]
 
         if debug:

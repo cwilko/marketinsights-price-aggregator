@@ -127,7 +127,7 @@ class BarChartConnector(Connector):
                 .set_index(["Date_Time", "ID"])
 
             data.columns = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
-            data = data.astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64", "OpenInterest": "Float64"})
+            data = data.astype(dtype={"Open": np.float64, "High": np.float64, "Low": np.float64, "Close": np.float64, "Volume": np.float64, "OpenInterest": np.float64})
 
         if (data.index.get_level_values("Date_Time").tz is None):
             data = ppl.localize(data, self.tz, self.tz)
@@ -168,7 +168,7 @@ class BarChartConnector(Connector):
                     .assign(ID=option["ID"]) \
                     .set_index(["Date_Time", "ID"])
 
-                data = data.astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64", "OpenInterest": "Float64", "strike": "Float64"})
+                data = data.astype(dtype={"Open": np.float64, "High": np.float64, "Low": np.float64, "Close": np.float64, "Volume": np.float64, "OpenInterest": np.float64, "strike": np.float64})
 
                 if (data.index.get_level_values("Date_Time").tz is None):
                     data = ppl.localize(data, self.tz, self.tz)
@@ -206,7 +206,7 @@ class BarChartConnector(Connector):
                 .assign(IV=lambda x: opt_utils.get_IV(x)) \
                 .set_index(["Date_Time", "ID"])
 
-            data = data.astype(dtype={"Open": "Float64", "High": "Float64", "Low": "Float64", "Close": "Float64", "Volume": "Float64", "OpenInterest": "Float64"})
+            data = data.astype(dtype={"Open": np.float64, "High": np.float64, "Low": np.float64, "Close": np.float64, "Volume": np.float64, "OpenInterest": np.float64})
 
             if (data.index.get_level_values("Date_Time").tz is None):
                 data = ppl.localize(data, self.tz, self.tz)
