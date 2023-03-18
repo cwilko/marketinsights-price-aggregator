@@ -1,2 +1,2 @@
 marketinsights-price-aggregator @ git+https://github.com/cwilko/marketinsights-price-aggregator.git
-#py-vollib-vectorized==0.1.1
+marketinsights-remote @ git+https://github.com/cwilko/marketinsights-remote.git

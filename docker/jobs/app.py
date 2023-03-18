@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime, date, timedelta
-from quantutils.api.datasource import MIDataStoreRemote
+from marketinsights.remote.datastore import MIDataStoreRemote
 import marketinsights.utils.store as priceStore
 
 # run

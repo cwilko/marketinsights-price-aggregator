@@ -1,6 +1,6 @@
 from marketinsights.connectors.Connector import Connector
 from datetime import datetime, date
-from quantutils.api.datasource import MIDataStoreRemote
+from marketinsights.remote.datastore import MIDataStoreRemote
 import quantutils.dataset.pipeline as ppl
 import pandas as pd
 import numpy as np

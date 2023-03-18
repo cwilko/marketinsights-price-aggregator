@@ -7,7 +7,7 @@ import pytest
 import json
 from marketinsights.api.aggregator import MarketDataAggregator
 import marketinsights.utils.store as priceStore
-from quantutils.api.datasource import MIDataStoreRemote
+from marketinsights.remote.datastore import MIDataStoreRemote
 
 dir = os.path.dirname(os.path.abspath(__file__))
 # 9b90de1971f03ce236c714153a9dd75e with precision="legacy"
@@ -68,7 +68,7 @@ class TestAggregate:
         assert hashlib.md5(marketData.values.flatten()).hexdigest() == "8809f5ad69f8c2c86727ca4c67e0d3fe"
 
         # Now try to save the raw data
-        mds = MIDataStoreRemote(location="http://localhost:8080")
+        mds = MIDataStoreRemote(location="http://pricestore.192.168.1.203.nip.io")
         savedData = priceStore.saveData(mds=mds, data=marketData, dry_run=True, delta=True)
         print(savedData)
         assert savedData.shape == (83, 4)
@@ -85,7 +85,7 @@ class TestAggregate:
         MDSData = MDS_aggregator.getData("DOW", "D", start, end, debug=False)
 
         dataHash = hashlib.md5(pd.util.hash_pandas_object(MDSData).values.flatten()).hexdigest()
-        print(MDSData)
+        print(MDSData["Close"].values[0])
         assert MDSData.shape == (8, 4)
         # Note this must match the OHLC test hexdigest
         assert dataHash == sharedDigest
