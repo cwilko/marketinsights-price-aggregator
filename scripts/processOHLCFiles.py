@@ -22,10 +22,9 @@ if __name__ == '__main__':
     data = aggregator.getData(aggregate=False)
 
     # Save data
-    mds = MIDataStoreRemote(location="http://localhost:8080")
-    savedData = priceStore.saveData(mds, data, dry_run=False, delta=True, debug=False)
+    mds = MIDataStoreRemote(location="http://pricestore.192.168.1.203.nip.io")
+    savedData = priceStore.saveData(mds, data, dry_run=False, delta=False, debug=False)
 
-    print(data)
     print(savedData)
 
     print("Updates complete at " + str(datetime.utcnow()))

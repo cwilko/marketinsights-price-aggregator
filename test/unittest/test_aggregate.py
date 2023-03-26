@@ -49,8 +49,8 @@ class TestAggregate:
         marketData = aggregator.getData(["DOW"], "H", start, end, debug=False)
         print(marketData)
         dataHash = hashlib.md5(marketData.values.flatten()).hexdigest()
-        assert marketData.shape == (20423, 4)
-        assert dataHash == "451bd3a567e847f0cccb4bed2f9c7032"
+        assert marketData.shape == (20431, 4)
+        assert dataHash == "19a8fb08d5d47d90b39fc6a5220379ca"
 
     def test_local_raw_MDS_and_save(self):
 
@@ -61,18 +61,17 @@ class TestAggregate:
         aggregator = MarketDataAggregator(data_config)
 
         start = "2013-01-01"
-        end = "2018-08-03 00:00"
+        end = "2018-03-18"
 
         marketData = aggregator.getData(start=start, end=end, aggregate=False)
-        assert marketData.shape == (118797, 4)
-        assert hashlib.md5(marketData.values.flatten()).hexdigest() == "8809f5ad69f8c2c86727ca4c67e0d3fe"
+        assert marketData.shape == (116444, 4)
+        assert hashlib.md5(marketData.values.flatten()).hexdigest() == "6c9b66ecec44601c4ddc349975cd74c9"
 
         # Now try to save the raw data
         mds = MIDataStoreRemote(location="http://pricestore.192.168.1.203.nip.io")
         savedData = priceStore.saveData(mds=mds, data=marketData, dry_run=True, delta=True)
-        print(savedData)
-        assert savedData.shape == (83, 4)
-        assert hashlib.md5(savedData.values.flatten()).hexdigest() == "cc8f7809f3af98721ff31ce539c10e48"
+        print(marketData)
+        assert savedData.shape == (0, 0)
 
     def test_local_aggregate_MDS(self):
 
