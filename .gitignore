@@ -9,7 +9,7 @@ test/data
 **/*egg-info
 *.hdf
 datasources/*
-datastore/
+datastore/*
 build/
 tmp
 IG.ipynb
