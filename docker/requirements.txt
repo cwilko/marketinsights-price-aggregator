@@ -1,2 +1,2 @@
-marketinsights-price-aggregator @ git+https://github.com/cwilko/marketinsights-price-aggregator.git
-marketinsights-remote @ git+https://github.com/cwilko/marketinsights-remote.git
+marketinsights-price-aggregator@git+https://github.com/cwilko/marketinsights-price-aggregator.git
+marketinsights-remote@git+https://github.com/cwilko/marketinsights-remote.git
